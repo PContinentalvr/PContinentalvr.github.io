@@ -16,6 +16,8 @@ The background audio file is `assets/backgroundost.mp3`. Browsers may block soun
 
 The browser-enforced Content Security Policy only allows the site's own scripts, styles, and audio, plus Google Fonts for type. Review that policy if you add an external embed, script, image, or media source.
 
+When updating the site's HTML, CSS, or JavaScript, bump the `v` query on the stylesheet and script in `index.html` together. This prevents browsers from combining a newly deployed page with cached older assets.
+
 Gatherings are described as happening past midnight in GMT−3; check Discord for the latest plans. The displayed house-coin design is a decorative nod, not a payment or reward system.
 
 The site is an unofficial fan community and is not affiliated with The Continental, Lionsgate, or John Wick.
