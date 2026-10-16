@@ -458,10 +458,16 @@ const watchHour = document.querySelector(".watch-hour");
 const watchMinute = document.querySelector(".watch-minute");
 const watchSecond = document.querySelector(".watch-second");
 const watchNumberMarks = watchPanel.querySelectorAll(".watch-tick");
+const watchRabbit = watchPanel.querySelector(".watch-rabbit");
+const watchSky = watchPanel.querySelector(".watch-sky");
+
+if (watchRabbit && watchSky) {
+  watchSky.insertBefore(watchRabbit, watchSky.querySelector('[data-i18n="watchSky"]'));
+}
 
 watchNumberMarks.forEach((mark, index) => {
   const angle = index * 30;
-  mark.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-61px)`;
+  mark.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-70px)`;
 });
 
 function updateClock() {
