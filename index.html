@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#10100e">
     <meta name="description" content="An after-hours VRChat social house for avatar workshops, art, movie nights, and good company.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self'; form-action 'self'; upgrade-insecure-requests">
     <title>The Continental — After-hours Social House</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
   </head>
@@ -28,6 +29,10 @@
           <a class="nav-join" href="#community"><span data-i18n="navJoin">Find your people</span> <span aria-hidden="true">↗</span></a>
         </nav>
         <div class="header-tools">
+          <button class="tool-button watch-toggle" type="button" aria-expanded="false" aria-controls="watch-panel" aria-label="Open the pocket watch" data-i18n-aria="openWatch">
+            <svg class="watch-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6m-5 0v2m4-2v2m-5 0h6l1 2a8 8 0 1 1-8 0l1-2Zm3 4v5l3 2"/><path d="M12 1v2m0 18v2"/></svg>
+            <span class="watch-label" data-i18n="watchLabel">Pocket watch</span>
+          </button>
           <button class="tool-button language-toggle" type="button" aria-label="Switch language to Portuguese" data-i18n-aria="switchLanguage" lang="pt">PT</button>
           <button class="tool-button sound-toggle" type="button" aria-label="Play background music" data-i18n-aria="playMusic" aria-pressed="false">
             <span class="sound-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
@@ -37,6 +42,23 @@
             <span></span><span></span>
           </button>
         </div>
+        <aside class="watch-panel" id="watch-panel" aria-labelledby="watch-title" hidden>
+          <div class="watch-panel-heading"><span class="watch-insignia" aria-hidden="true">✳</span><div><span class="watch-panel-kicker" data-i18n="watchKicker">THE HOUSE CHRONOMETER</span><h2 id="watch-title" data-i18n="watchTitle">Two sides of midnight</h2></div><span class="watch-serial">TC–01</span></div>
+          <div class="pocket-watch-face" aria-hidden="true">
+            <span class="watch-tick"></span><span class="watch-tick"></span><span class="watch-tick"></span><span class="watch-tick"></span><span class="watch-tick"></span><span class="watch-tick"></span>
+            <span class="watch-tick"></span><span class="watch-tick"></span><span class="watch-tick"></span><span class="watch-tick"></span><span class="watch-tick"></span><span class="watch-tick"></span>
+            <span class="watch-number watch-number-12">XII</span><span class="watch-number watch-number-3">III</span><span class="watch-number watch-number-6">VI</span><span class="watch-number watch-number-9">IX</span>
+            <span class="watch-hand watch-hour"></span><span class="watch-hand watch-minute"></span><span class="watch-hand watch-second"></span><span class="watch-pivot"></span>
+            <span class="watch-rabbit" aria-hidden="true">
+              <svg viewBox="0 0 32 36"><path d="M11 18 7 5c-.8-2.5 2.3-3.6 3.5-.9L15 15m4 1 2-13c.4-2.6 3.6-2.3 3.4.6L24 19m-12-1c-5 2-7 6-5 10 2.8 5.4 14 6.7 19 2 4.7-4.3 1.7-11.6-4.3-13.2-3.4-.9-7.4-.5-9.7 1.2Z"/><path d="M22 24h.2"/></svg>
+            </span>
+          </div>
+          <div class="watch-times">
+            <div><span data-i18n="watchLondon">LONDON · LOCAL TIME</span><strong class="clock-time" data-timezone="Europe/London">--:--:--</strong><small class="clock-date" data-timezone="Europe/London">---</small></div>
+            <div><span data-i18n="watchHouse">THE HOUSE · GMT−3</span><strong class="clock-time" data-timezone="America/Sao_Paulo">--:--:--</strong><small class="clock-date" data-timezone="America/Sao_Paulo">---</small></div>
+          </div>
+          <p class="watch-footer"><span class="status-dot"></span><span data-i18n="watchFooter">A SMALL REMINDER: THE NIGHT IS YOUNG.</span></p>
+        </aside>
       </header>
 
       <audio id="house-audio" src="assets/backgroundost.mp3" autoplay loop preload="metadata"></audio>
@@ -74,6 +96,7 @@
             <div class="art-caption"><span>✳ &nbsp;GOOD COMPANY</span><span data-i18n="artCaption">AFTER HOURS · GMT−3</span></div>
             <div class="art-side-label" data-i18n="artSideLabel">YOUR WORLD, YOUR WAY</div>
             <div class="art-spark spark-one">✳</div><div class="art-spark spark-two">✦</div><div class="art-spark spark-three">✧</div>
+            <div class="art-rabbit" aria-hidden="true"><svg viewBox="0 0 46 66"><path d="M17 31 12 6c-.8-4 4.7-5 5.8-.6l5.4 23m6 1 3-23c.6-4.4 6.4-3.7 5.6.8l-4 25m-17.7 1.2c-7 4.4-9.7 12.4-6 20.4 4.4 9.4 22.4 12.3 31 5.6 8-6.2 5.3-20.1-4.2-25-5.4-2.8-13.8-2.2-18.9 1.8Z"/><path d="M30 47h.2M12 57l-5 5m29-5 4 5"/></svg><span data-i18n="rabbitCaption">FOLLOW THE LATE-NIGHT RABBIT</span></div>
           </div>
           <div class="hero-index"><span data-i18n="scrollExplore">SCROLL TO EXPLORE</span><span class="index-line"></span><span>01 — 04</span></div>
         </section>
@@ -85,7 +108,7 @@
           </div>
         </div>
 
-        <section class="dispatch section-pad" id="dispatch" aria-labelledby="dispatch-title">
+        <section class="dispatch section-pad reveal-on-scroll" id="dispatch" aria-labelledby="dispatch-title">
           <div class="section-heading">
             <div><p class="eyebrow" data-i18n="dispatchEyebrow">FRESH FROM THE LOBBY</p><h2 id="dispatch-title" data-i18n-html="dispatchTitle">The <em>dispatch.</em></h2></div>
             <a class="text-link desktop-link" href="#community"><span data-i18n="moreFromHouse">Join the conversation</span><span aria-hidden="true">↗</span></a>
@@ -133,7 +156,7 @@
           <a class="text-link mobile-link" href="#community"><span data-i18n="moreFromHouse">Join the conversation</span><span aria-hidden="true">↗</span></a>
         </section>
 
-        <section class="gatherings section-pad" id="gatherings" aria-labelledby="gatherings-title">
+        <section class="gatherings section-pad reveal-on-scroll" id="gatherings" aria-labelledby="gatherings-title">
           <div class="gatherings-backdrop" aria-hidden="true"></div>
           <div class="gatherings-copy">
             <p class="eyebrow"><span class="status-dot"></span><span data-i18n="gatheringEyebrow">THE NIGHT IS YOURS</span></p>
@@ -152,24 +175,24 @@
           </div>
         </section>
 
-        <section class="about section-pad" id="about" aria-labelledby="about-title">
+        <section class="about section-pad reveal-on-scroll" id="about" aria-labelledby="about-title">
           <div class="about-heading">
             <p class="eyebrow" data-i18n="aboutEyebrow">THE PEOPLE BEHIND THE LOBBY</p>
             <h2 id="about-title" data-i18n-html="aboutTitle">Odd hours.<br><em>Good people.</em></h2>
             <p data-i18n="aboutIntro">We're a small crew with different interests and the same open-door policy. Say hello about art, avatars, aviation, languages, or absolutely anything else.</p>
           </div>
           <div class="profile-grid">
-            <article class="profile-card">
+            <article class="profile-card" data-file="FILE 001">
               <div class="profile-top"><span class="profile-monogram">P.</span><div><p class="profile-role" data-i18n="prickettRole">ART · CODE · 2D / 3D</p><h3>Prickett</h3></div></div>
               <p class="profile-bio" data-i18n="prickettBio">Art and IT undergraduate: I code, draw, and make things in 2D and 3D. I speak English and Portuguese, and I'm learning Chinese and other languages. I'm autistic, easygoing, and always happy to chat about pretty much anything.</p>
               <a class="profile-link" href="https://guns.lol/prickett" target="_blank" rel="noopener noreferrer"><span data-i18n="prickettLink">Find Prickett online</span><span aria-hidden="true">↗</span></a>
             </article>
-            <article class="profile-card">
+            <article class="profile-card" data-file="FILE 002">
               <div class="profile-top"><span class="profile-monogram">N.</span><div><p class="profile-role" data-i18n="nekozuskaRole">OWNER · VIP</p><h3>Nekozuska</h3></div></div>
               <p class="profile-bio" data-i18n="nekozuskaBio">The owner. Easygoing, a little mysterious, VIP energy, and known to change moods like the weather. Come say hi; you might catch a different chapter.</p>
               <span class="profile-signoff" data-i18n="nekozuskaSignoff">THE HOUSE HAS ITS MYSTERIES.</span>
             </article>
-            <article class="profile-card">
+            <article class="profile-card" data-file="FILE 003">
               <div class="profile-top"><span class="profile-monogram">S.</span><div><p class="profile-role" data-i18n="succubiRole">FLIGHT DECK · AGENT 007</p><h3>Succubi</h3></div></div>
               <p class="profile-bio" data-i18n="succubiBio">Self-appointed sad-boy Agent 007: zero failures, zero risk, and 7,000 hours in flight simulator. Flight stories, questionable bravado, and good company come standard.</p>
               <span class="profile-signoff" data-i18n="succubiSignoff">0 FAILURES · 0 RISK · 7K HOURS</span>
@@ -177,7 +200,7 @@
           </div>
         </section>
 
-        <section class="community section-pad" id="community" aria-labelledby="community-title">
+        <section class="community section-pad reveal-on-scroll" id="community" aria-labelledby="community-title">
           <div class="community-ornament" aria-hidden="true">✳</div>
           <p class="eyebrow"><span class="status-dot"></span><span data-i18n="communityEyebrow">YOUR PEOPLE ARE HERE</span></p>
           <h2 id="community-title" data-i18n-html="communityTitle">The doors are <em>open.</em></h2>

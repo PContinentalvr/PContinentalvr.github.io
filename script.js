@@ -14,6 +14,15 @@ const translations = {
     navAbout: "The people",
     navJoin: "Find your people",
     switchLanguage: "Switch language to Portuguese",
+    openWatch: "Open the pocket watch",
+    closeWatch: "Close the pocket watch",
+    watchLabel: "Pocket watch",
+    watchKicker: "THE HOUSE CHRONOMETER",
+    watchTitle: "Two sides of midnight",
+    watchLondon: "LONDON · LOCAL TIME",
+    watchHouse: "THE HOUSE · GMT−3",
+    watchFooter: "A SMALL REMINDER: THE NIGHT IS YOUNG.",
+    rabbitCaption: "FOLLOW THE LATE-NIGHT RABBIT",
     playMusic: "Play background music",
     pauseMusic: "Pause background music",
     musicOff: "Play house music",
@@ -128,6 +137,15 @@ const translations = {
     navAbout: "A galera",
     navJoin: "Encontre sua turma",
     switchLanguage: "Mudar idioma para inglês",
+    openWatch: "Abrir o relógio de bolso",
+    closeWatch: "Fechar o relógio de bolso",
+    watchLabel: "Relógio de bolso",
+    watchKicker: "O CRONÔMETRO DA CASA",
+    watchTitle: "Dois lados da meia-noite",
+    watchLondon: "LONDRES · HORA LOCAL",
+    watchHouse: "A CASA · GMT−3",
+    watchFooter: "UM LEMBRETE: A NOITE SÓ ESTÁ COMEÇANDO.",
+    rabbitCaption: "SIGA O COELHO DA MADRUGADA",
     playMusic: "Tocar música de fundo",
     pauseMusic: "Pausar música de fundo",
     musicOff: "Tocar música da casa",
@@ -290,6 +308,7 @@ function setLanguage(language) {
   languageToggle.lang = language === "en" ? "pt" : "en";
   updateMusicLabel();
   updateMenuLabel();
+  updateWatchLabel();
 }
 
 const filterButtons = document.querySelectorAll(".filter-button");
@@ -313,6 +332,100 @@ filterButtons.forEach((button) => {
 
 const menuToggle = document.querySelector(".menu-toggle");
 const siteNavigation = document.querySelector("#site-navigation");
+const watchToggle = document.querySelector(".watch-toggle");
+const watchPanel = document.querySelector("#watch-panel");
+const watchHour = document.querySelector(".watch-hour");
+const watchMinute = document.querySelector(".watch-minute");
+const watchSecond = document.querySelector(".watch-second");
+const watchNumberMarks = watchPanel.querySelectorAll(".watch-tick");
+
+watchNumberMarks.forEach((mark, index) => {
+  const angle = index * 30;
+  mark.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-61px)`;
+});
+
+function updateClock() {
+  const now = new Date();
+  const londonParts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+  const parts = Object.fromEntries(londonParts.map(({ type, value }) => [type, Number(value)]));
+  const second = parts.second + now.getMilliseconds() / 1000;
+  const minute = parts.minute + second / 60;
+  const hour = (parts.hour % 12) + minute / 60;
+
+  watchHour.style.transform = `translate(-50%, -100%) rotate(${hour * 30}deg)`;
+  watchMinute.style.transform = `translate(-50%, -100%) rotate(${minute * 6}deg)`;
+  watchSecond.style.transform = `translate(-50%, -100%) rotate(${second * 6}deg)`;
+
+  const locale = currentLanguage === "pt" ? "pt-BR" : "en-GB";
+  for (const time of watchPanel.querySelectorAll(".clock-time")) {
+    time.textContent = new Intl.DateTimeFormat(locale, {
+      timeZone: time.dataset.timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    }).format(now);
+  }
+  for (const date of watchPanel.querySelectorAll(".clock-date")) {
+    date.textContent = new Intl.DateTimeFormat(locale, {
+      timeZone: date.dataset.timezone,
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }).format(now);
+  }
+}
+
+function setWatchOpen(isOpen) {
+  watchToggle.setAttribute("aria-expanded", String(isOpen));
+  updateWatchLabel();
+  watchPanel.hidden = !isOpen;
+}
+
+function updateWatchLabel() {
+  const isOpen = watchToggle.getAttribute("aria-expanded") === "true";
+  watchToggle.setAttribute("aria-label", translations[currentLanguage][isOpen ? "closeWatch" : "openWatch"]);
+}
+
+watchToggle.addEventListener("click", () => {
+  setWatchOpen(watchToggle.getAttribute("aria-expanded") !== "true");
+});
+
+document.addEventListener("click", (event) => {
+  if (!watchPanel.hidden && !watchPanel.contains(event.target) && !watchToggle.contains(event.target)) {
+    setWatchOpen(false);
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !watchPanel.hidden) {
+    setWatchOpen(false);
+    watchToggle.focus();
+    return;
+  }
+  if (event.key === "Escape" && menuToggle.getAttribute("aria-expanded") === "true") {
+    menuToggle.setAttribute("aria-expanded", "false");
+    siteNavigation.classList.remove("is-open");
+    updateMenuLabel();
+    menuToggle.focus();
+  }
+});
+
+window.addEventListener("scroll", () => {
+  if (!watchPanel.hidden) {
+    setWatchOpen(false);
+  }
+}, { passive: true });
+
+updateClock();
+window.setInterval(updateClock, 1000);
 
 function updateMenuLabel() {
   const isExpanded = menuToggle.getAttribute("aria-expanded") === "true";
@@ -382,3 +495,19 @@ houseAudio.play().catch((error) => {
     soundToggle.querySelector(".sound-label").textContent = translations[currentLanguage].musicUnavailable;
   }
 });
+
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+  const scrollObserver = new IntersectionObserver((entries, observer) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    }
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+
+  for (const section of document.querySelectorAll(".reveal-on-scroll")) {
+    scrollObserver.observe(section);
+  }
+  document.documentElement.classList.add("motion-ready");
+}
