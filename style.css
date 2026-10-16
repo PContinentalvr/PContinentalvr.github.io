@@ -73,10 +73,10 @@ button { color: inherit; font: inherit; }
 .watch-number-3 { top: 50%; right: 23px; transform: translateY(-50%); }
 .watch-number-6 { bottom: 18px; left: 50%; transform: translateX(-50%); }
 .watch-number-9 { top: 50%; left: 22px; transform: translateY(-50%); }
-.watch-hand { position: absolute; z-index: 1; bottom: 50%; left: 50%; display: block; transform-origin: 50% 100%; border-radius: 2px; }
-.watch-hour { width: 4px; height: 39px; background: #e5d4ae; }
-.watch-minute { width: 2px; height: 52px; background: #c7aa70; }
-.watch-second { z-index: 2; width: 1px; height: 59px; background: #ad5750; }
+.watch-hand { position: absolute; z-index: 1; top: 50%; left: 50%; display: block; margin-left: -2px; transform-origin: 50% 0; border-radius: 2px; }
+.watch-hour { width: 4px; height: 39px; margin-left: -2px; background: #e5d4ae; }
+.watch-minute { width: 2px; height: 52px; margin-left: -1px; background: #c7aa70; }
+.watch-second { z-index: 2; width: 1px; height: 59px; margin-left: -.5px; background: #ad5750; }
 .watch-pivot { position: absolute; z-index: 3; top: 50%; left: 50%; width: 7px; height: 7px; transform: translate(-50%,-50%); border: 1px solid #efdbad; border-radius: 50%; background: #927441; }
 .watch-rabbit { position: absolute; right: 27px; bottom: 29px; width: 28px; height: 31px; opacity: .75; }
 .watch-rabbit svg { width: 100%; height: 100%; fill: none; stroke: #d1b879; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.1; }
@@ -375,6 +375,19 @@ h1 em, h2 em { color: var(--gold-bright); font-weight: 500; }
   .profile-bio { font-size: 9px; }
   .site-footer { padding-inline: 5%; }
 }
+@media (min-width: 1001px) and (max-width: 1120px) {
+  .site-header { padding-inline: 4%; }
+  .site-nav { position: absolute; top: calc(100% - 1px); right: 0; left: 0; display: none; align-items: stretch; gap: 0; padding: 10px 4% 20px; border-bottom: 1px solid var(--line); background: #11110f; }
+  .site-nav.is-open { display: grid; }
+  .site-nav > a:not(.nav-join) { padding: 14px 2px; border-bottom: 1px solid rgb(200 169 110 / 10%); }
+  .nav-join { margin-top: 13px; }
+  .menu-toggle { display: grid; width: 38px; height: 38px; align-content: center; justify-items: center; gap: 6px; border: 1px solid var(--line); background: transparent; cursor: pointer; }
+  .menu-toggle > span { width: 17px; height: 1px; background: var(--gold-bright); transition: transform .2s; }
+  .menu-toggle[aria-expanded="true"] > span:first-child { transform: translateY(3.5px) rotate(45deg); }
+  .menu-toggle[aria-expanded="true"] > span:nth-child(2) { transform: translateY(-3.5px) rotate(-45deg); }
+  .tool-button { padding-inline: 8px; }
+  .sound-label, .watch-label { display: none; }
+}
 @media (max-width: 720px) {
   html { scroll-padding-top: 70px; }
   .site-header { height: 70px; padding-inline: 19px; }
@@ -467,15 +480,10 @@ h1 em, h2 em { color: var(--gold-bright); font-weight: 500; }
   .card-body h3 { font-size: 17px; }
   .card-body > p { font-size: 8px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-}
-
 .watch-sky { display: flex; align-items: center; gap: 8px; margin-top: 13px; color: #a68d5c; font: 7px var(--mono); letter-spacing: .07em; }
 .sky-star { color: var(--gold-bright); font-size: 14px; animation: slow-spin 18s linear infinite; }
 .sky-planet { width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #e4d1a0, #927747 70%); box-shadow: 0 0 9px #c8a96e66; }
 .sky-orbit { margin-left: auto; color: #cfb578; font-size: 12px; }
-.home-page main > #dispatch, .home-page main > #gatherings, .home-page main > #about { display: none; }
 .route-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; padding-top: 42px; padding-bottom: 67px; }
 .route-card { position: relative; display: grid; min-height: 205px; align-content: end; gap: 12px; padding: 23px; overflow: hidden; border: 1px solid var(--line); background: radial-gradient(ellipse at 100% 0, #32291b 0, transparent 60%), #15140f; transition: border-color .25s, transform .25s; }
 .route-card:hover { transform: translateY(-4px); border-color: var(--gold-muted); }
@@ -494,7 +502,7 @@ h1 em, h2 em { color: var(--gold-bright); font-weight: 500; }
 .notice-copy .eyebrow { margin-bottom: 10px; }
 .notice-copy h2 { margin: 0 0 8px; font: 500 clamp(25px, 3.2vw, 38px)/1.12 var(--serif); }
 .notice-copy h2 em { color: var(--gold-bright); }
-.notice-copy > p:last-child { margin: 0; color: #aaa69b; font-size: 10px; line-height: 1.7; }
+.notice-copy > p:last-child { margin: 0; color: #aaa69b; font-size: 10px; line-height: 1.7; overflow-wrap: anywhere; }
 .notice-link { margin-left: auto; white-space: nowrap; }
 .inner-hero { position: relative; padding-top: 82px; padding-bottom: 67px; overflow: hidden; border-bottom: 1px solid var(--line); background: radial-gradient(ellipse at 88% 20%, #32291a 0, transparent 38%), linear-gradient(110deg, #171611, #10100e 70%); }
 .inner-hero .eyebrow { margin-bottom: 14px; }
@@ -518,7 +526,7 @@ h1 em, h2 em { color: var(--gold-bright); font-weight: 500; }
 .noticeboard-heading > div > p:last-child, .schedule-copy > p:not(.eyebrow) { color: #aaa69b; font-size: 11px; line-height: 1.8; }
 .notice-feed { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 28px; }
 .notice-item { padding: 22px; border: 1px solid var(--line); background: linear-gradient(145deg, #1b1a15, #12120f); }
-.notice-item h3 { margin: 0 0 10px; font: 500 22px/1.2 var(--serif); color: var(--gold-bright); }
+.notice-item h3 { margin: 0 0 10px; font: 500 22px/1.2 var(--serif); color: var(--gold-bright); overflow-wrap: anywhere; }
 .notice-item p { margin: 0 0 17px; color: #c0bbae; font-size: 11px; line-height: 1.75; white-space: pre-wrap; overflow-wrap: anywhere; }
 .notice-item time, .notice-author, .notice-status, .notice-updated { color: #9e906f; font: 8px/1.6 var(--mono); letter-spacing: .06em; }
 .notice-item time { display: block; margin-top: 7px; }

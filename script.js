@@ -349,6 +349,8 @@ const requestedLanguage = currentLanguage;
 currentLanguage = "en";
 const languageToggle = document.querySelector(".language-toggle");
 const pageDescription = document.querySelector('meta[name="description"]');
+let cachedNotices = null;
+let renderNotices = () => {};
 const pageTitles = {
   en: {
     home: "The Continental — After-hours Social House",
@@ -426,6 +428,7 @@ function setLanguage(language) {
   updateMusicLabel();
   updateMenuLabel();
   updateWatchLabel();
+  if (cachedNotices !== null) renderNotices(cachedNotices);
 }
 
 const filterButtons = document.querySelectorAll(".filter-button");
@@ -467,9 +470,9 @@ function updateClock() {
   const minute = now.getMinutes() + second / 60;
   const hour = (now.getHours() % 12) + minute / 60;
 
-  watchHour.style.transform = `translateX(-50%) rotate(${hour * 30}deg)`;
-  watchMinute.style.transform = `translateX(-50%) rotate(${minute * 6}deg)`;
-  watchSecond.style.transform = `translateX(-50%) rotate(${second * 6}deg)`;
+  watchHour.style.transform = `rotate(${hour * 30}deg)`;
+  watchMinute.style.transform = `rotate(${minute * 6}deg)`;
+  watchSecond.style.transform = `rotate(${second * 6}deg)`;
 
   const locale = currentLanguage === "pt" ? "pt-BR" : "en-GB";
   for (const time of watchPanel.querySelectorAll(".clock-time")) {
@@ -600,8 +603,9 @@ houseAudio.addEventListener("error", () => {
 });
 
 const noticeFeed = document.querySelector("#notice-feed");
-if (noticeFeed) {
-  const noticeUrl = noticeFeed.dataset.feedUrl || DEFAULT_NOTICE_FEED;
+const noticePreview = document.querySelector("#notice-preview-message");
+if (noticeFeed || noticePreview) {
+  const noticeUrl = noticeFeed?.dataset.feedUrl || noticePreview?.dataset.feedUrl || DEFAULT_NOTICE_FEED;
 
   async function loadNotices() {
     try {
@@ -614,11 +618,33 @@ if (noticeFeed) {
         throw new TypeError("Notice feed must return a JSON array.");
       }
 
+      if (notices.some((notice) => !notice || typeof notice.title !== "string" || typeof notice.body !== "string")) {
+        throw new TypeError("Each notice must include string title and body fields.");
+      }
+      cachedNotices = notices.slice(0, 10);
+      renderNotices(cachedNotices);
+    } catch (error) {
+      console.error("The noticeboard could not be loaded.", error);
+      if (noticeFeed) {
+        const failed = document.createElement("p");
+        failed.className = "notice-status";
+        failed.textContent = translations[currentLanguage].noticeFailed;
+        noticeFeed.replaceChildren(failed);
+      }
+      if (noticePreview) noticePreview.textContent = translations[currentLanguage].noticeFailed;
+    }
+  }
+
+  renderNotices = (notices) => {
+    if (noticePreview) {
+      const latest = notices[0];
+      noticePreview.textContent = latest
+        ? `${latest.title.slice(0, 160)} — ${latest.body.replace(/\s+/g, " ").slice(0, 180)}`
+        : translations[currentLanguage].noticeDescription;
+    }
+    if (noticeFeed) {
       noticeFeed.replaceChildren();
-      for (const notice of notices.slice(0, 10)) {
-        if (!notice || typeof notice.title !== "string" || typeof notice.body !== "string") {
-          throw new TypeError("Each notice must include string title and body fields.");
-        }
+      for (const notice of notices) {
         const item = document.createElement("article");
         item.className = "notice-item";
         const heading = document.createElement("h3");
@@ -651,15 +677,9 @@ if (noticeFeed) {
       }
       const checkedAt = document.querySelector("#notice-checked");
       if (checkedAt) checkedAt.textContent = new Intl.DateTimeFormat(currentLanguage === "pt" ? "pt-BR" : "en-GB", { timeStyle: "short" }).format(new Date());
-    } catch (error) {
-      console.error("The noticeboard could not be loaded.", error);
-      noticeFeed.replaceChildren();
-      const failed = document.createElement("p");
-      failed.className = "notice-status";
-      failed.textContent = translations[currentLanguage].noticeFailed;
-      noticeFeed.append(failed);
     }
-  }
+  };
+
   loadNotices();
   window.setInterval(() => {
     if (!document.hidden) loadNotices();

@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261016-5">
-    <script src="script.js?v=20261016-5" defer></script>
+    <link rel="stylesheet" href="style.css?v=20261016-8">
+    <script src="script.js?v=20261016-8" defer></script>
   </head>
   <body class="home-page">
     <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
@@ -23,7 +23,7 @@
           <span class="wordmark-copy"><strong>THE CONTINENTAL</strong><small data-i18n="houseLabel">VR SOCIAL HOUSE</small></span>
         </a>
         <nav class="site-nav" id="site-navigation" aria-label="Main navigation" data-i18n-aria="navigation">
-          <a href="index.html" data-i18n="navHome">The lobby</a>
+          <a href="index.html" aria-current="page" data-i18n="navHome">The lobby</a>
           <a href="dispatch.html" data-i18n="navDispatch">Dispatch</a>
           <a href="gatherings.html" data-i18n="navGatherings">Gatherings</a>
           <a href="people.html" data-i18n="navAbout">The people</a>
@@ -107,7 +107,7 @@
 
         <section class="notice-preview section-pad reveal-on-scroll" aria-labelledby="notice-preview-title">
           <div class="notice-seal" aria-hidden="true"><span>✳</span><small>TC<br>NOTES</small></div>
-          <div class="notice-copy"><p class="eyebrow"><span class="status-dot"></span><span data-i18n="noticeEyebrow">LATEST FROM THE NOTICEBOARD</span></p><h2 id="notice-preview-title" data-i18n-html="noticeTitle">Letters from<br><em>the late shift.</em></h2><p data-i18n="noticeDescription">The newest gathering notes, member news, and little dispatches live on our noticeboard.</p></div>
+          <div class="notice-copy"><p class="eyebrow"><span class="status-dot"></span><span data-i18n="noticeEyebrow">LATEST FROM THE NOTICEBOARD</span></p><h2 id="notice-preview-title" data-i18n-html="noticeTitle">Letters from<br><em>the late shift.</em></h2><p id="notice-preview-message" data-feed-url="assets/notices.json" data-i18n="noticeDescription">The newest gathering notes, member news, and little dispatches live on our noticeboard.</p></div>
           <a class="button button-outline notice-link" href="gatherings.html#noticeboard"><span data-i18n="noticeCta">Read the latest notices</span><span aria-hidden="true">↗</span></a>
         </section>
 
@@ -115,98 +115,6 @@
           <a class="route-card" href="dispatch.html"><span class="route-card-icon">♠</span><span class="route-card-meta" data-i18n="routeDispatchMeta">THE WEEKLY DISPATCH</span><strong data-i18n-html="routeDispatchTitle">What we're<br>making.</strong><span class="route-card-link" data-i18n="routeOpen">OPEN THE FILE ↗</span></a>
           <a class="route-card route-card-red" href="gatherings.html"><span class="route-card-icon">♦</span><span class="route-card-meta" data-i18n="routeGatheringMeta">THE HOUSE CALENDAR</span><strong data-i18n-html="routeGatheringTitle">Where the<br>night goes.</strong><span class="route-card-link" data-i18n="routeOpen">OPEN THE FILE ↗</span></a>
           <a class="route-card" href="people.html"><span class="route-card-icon">♥</span><span class="route-card-meta" data-i18n="routePeopleMeta">THE HOUSE ROSTER</span><strong data-i18n-html="routePeopleTitle">A few people<br>to meet.</strong><span class="route-card-link" data-i18n="routeOpen">OPEN THE FILE ↗</span></a>
-        </section>
-
-        <section class="dispatch section-pad reveal-on-scroll" id="dispatch" aria-labelledby="dispatch-title">
-          <div class="section-heading">
-            <div><p class="eyebrow" data-i18n="dispatchEyebrow">FRESH FROM THE LOBBY</p><h2 id="dispatch-title" data-i18n-html="dispatchTitle">The <em>dispatch.</em></h2></div>
-            <a class="text-link desktop-link" href="dispatch.html"><span data-i18n="moreFromHouse">Join the conversation</span><span aria-hidden="true">↗</span></a>
-          </div>
-          <div class="dispatch-toolbar">
-            <p data-i18n="dispatchIntro">Workshops, art, films, and whatever else the night brings.</p>
-            <div class="feed-filters" role="group" aria-label="Filter dispatch posts" data-i18n-aria="filterLabel">
-              <button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true"><span data-i18n="filterAll">Everything</span> <span aria-hidden="true">06</span></button>
-              <button class="filter-button" type="button" data-filter="workshop" aria-pressed="false" data-i18n="filterWorkshop">Workshops</button>
-              <button class="filter-button" type="button" data-filter="art" aria-pressed="false" data-i18n="filterArt">Art</button>
-              <button class="filter-button" type="button" data-filter="movie" aria-pressed="false" data-i18n="filterMovies">Movie nights</button>
-              <button class="filter-button" type="button" data-filter="notes" aria-pressed="false" data-i18n="filterNotes">House notes</button>
-            </div>
-          </div>
-          <div class="dispatch-grid" aria-live="polite">
-            <article class="dispatch-card feature-card" data-category="workshop">
-              <div class="card-image image-lounge">
-                <span class="card-category"><span class="status-dot"></span><span data-i18n="catWorkshop">HANDS-ON WORKSHOP</span></span>
-                <div class="lounge-scene" aria-hidden="true"><div class="lounge-window"><i></i><i></i><i></i></div><div class="lounge-lamp"></div><div class="lounge-sofa"><i></i></div><div class="lounge-table"></div><div class="lounge-vase">✳</div></div>
-                <span class="image-stamp">01 <i>✳</i> 06</span>
-              </div>
-              <div class="card-body"><div class="card-meta"><span data-i18n="metaWorkshop">AVATAR WORKSHOP</span><span>01 / 06</span></div><h3 data-i18n-html="postWorkshopTitle">Make your avatar<br><em>more you.</em></h3><p data-i18n="postWorkshopText">Friendly, hands-on sessions for customizing VRChat avis. Bring a work in progress, ask questions, and learn at your own pace.</p><a class="card-link" href="#community"><span data-i18n="postWorkshopLink">Learn together</span><span aria-hidden="true">↗</span></a></div>
-            </article>
-            <article class="dispatch-card" data-category="art">
-              <div class="card-image image-note"><span class="card-category" data-i18n="catArt">THE ART ROOM</span><div class="note-art"><span class="note-star">✳</span><span class="note-rule"></span><strong data-i18n-html="artImageText">MAKE<br>THINGS<br>TOGETHER</strong><span class="note-number">TC / 002</span></div><span class="image-stamp">02 <i>✳</i> 06</span></div>
-              <div class="card-body"><div class="card-meta"><span data-i18n="metaArt">ART & SHOW-AND-TELL</span><span>02 / 06</span></div><h3 data-i18n-html="postArtTitle">Made by hand.<br><em>Shared with friends.</em></h3><p data-i18n="postArtText">Drawing, digital art, 2D, 3D, and works in progress. Pull up a chair, share what you're making, or just enjoy the studio company.</p><a class="card-link" href="#community"><span data-i18n="postArtLink">Bring your creativity</span><span aria-hidden="true">↗</span></a></div>
-            </article>
-            <article class="dispatch-card" data-category="movie">
-              <div class="card-image image-midnight"><span class="card-category" data-i18n="catMovie">AFTER-HOURS SCREENING</span><div class="midnight-art"><span class="midnight-circle"></span><span class="midnight-type" data-i18n-html="movieImageText">LIGHTS<br>LOW<br>FILM<br>ON</span><span class="midnight-date" data-i18n="movieImageTag">MOVIE NIGHT</span><span class="midnight-lines"></span></div><span class="image-stamp">03 <i>✳</i> 06</span></div>
-              <div class="card-body"><div class="card-meta"><span data-i18n="metaMovie">MOVIE NIGHT</span><span>03 / 06</span></div><h3 data-i18n-html="postMovieTitle">One more film.<br><em>One more friend.</em></h3><p data-i18n="postMovieText">Settle in for a shared screening and the conversation that follows. Check Discord for what's on and how to join.</p><a class="card-link" href="#community"><span data-i18n="postMovieLink">Find the next screening</span><span aria-hidden="true">↗</span></a></div>
-            </article>
-            <article class="dispatch-card" data-category="workshop">
-              <div class="card-image image-workshop"><span class="card-category" data-i18n="catCreator">CREATOR'S CORNER</span><div class="creator-art" aria-hidden="true"><span class="creator-orbit"></span><span class="creator-cube"></span><span class="creator-spark">✳</span><span class="creator-type" data-i18n-html="creatorImageText">MAKE<br>IT YOURS</span></div><span class="image-stamp">04 <i>✳</i> 06</span></div>
-              <div class="card-body"><div class="card-meta"><span data-i18n="metaCreator">LEARN & EXPERIMENT</span><span>04 / 06</span></div><h3 data-i18n-html="postCreatorTitle">Curious how<br><em>it's made?</em></h3><p data-i18n="postCreatorText">Swap creative tips, explore tools, and ask the questions you've been sitting on. Beginners, hobbyists, and pros all welcome.</p><a class="card-link" href="#community"><span data-i18n="postCreatorLink">Ask the community</span><span aria-hidden="true">↗</span></a></div>
-            </article>
-            <article class="dispatch-card" data-category="notes">
-              <div class="card-image image-note"><span class="card-category" data-i18n="catHouse">A NOTE FROM THE HOUSE</span><div class="note-art"><span class="note-star">✳</span><span class="note-rule"></span><strong data-i18n-html="houseImageText">DRESS<br>SHARP<br>BE KIND</strong><span class="note-number">TC / 005</span></div><span class="image-stamp">05 <i>✳</i> 06</span></div>
-              <div class="card-body"><div class="card-meta"><span data-i18n="metaDress">THE DRESS CODE</span><span>05 / 06</span></div><h3 data-i18n-html="postDressTitle">A little <em>fancy.</em><br>Entirely yourself.</h3><p data-i18n="postDressText">Dress sharp if you feel like it: our house leans fancy. Come in your own style, respect one another, and make yourself at home.</p><a class="card-link" href="#about"><span data-i18n="postDressLink">Meet the house</span><span aria-hidden="true">↗</span></a></div>
-            </article>
-            <article class="dispatch-card" data-category="gathering">
-              <div class="card-image image-lounge image-late"><span class="card-category"><span class="status-dot"></span><span data-i18n="catLate">LATE-NIGHT LOBBY</span></span><div class="late-night-art"><span class="late-moon"></span><span class="late-window"></span><span class="late-door"></span><span class="late-caption">00:00<br>+</span></div><span class="image-stamp">06 <i>✳</i> 06</span></div>
-              <div class="card-body"><div class="card-meta"><span data-i18n="metaLate">AROUND THE HOUSE</span><span>06 / 06</span></div><h3 data-i18n-html="postLateTitle">The hour gets<br><em>a little later.</em></h3><p data-i18n="postLateText">Most of our hangouts happen past midnight, GMT−3. No strict start time: the lobby wakes up when the night owls arrive.</p><a class="card-link" href="#community"><span data-i18n="postLateLink">Find us after hours</span><span aria-hidden="true">↗</span></a></div>
-            </article>
-          </div>
-          <a class="text-link mobile-link" href="dispatch.html"><span data-i18n="moreFromHouse">Join the conversation</span><span aria-hidden="true">↗</span></a>
-        </section>
-
-        <section class="gatherings section-pad reveal-on-scroll" id="gatherings" aria-labelledby="gatherings-title">
-          <div class="gatherings-backdrop" aria-hidden="true"></div>
-          <div class="gatherings-copy">
-            <p class="eyebrow"><span class="status-dot"></span><span data-i18n="gatheringEyebrow">THE NIGHT IS YOURS</span></p>
-            <h2 id="gatherings-title" data-i18n-html="gatheringTitle">Make a night<br>of <em>it.</em></h2>
-            <p data-i18n="gatheringText">Avatar workshops, art sessions, movie nights, and plenty of room for unplanned conversation. We make things together, then see where the evening goes.</p>
-            <a class="button button-outline" href="gatherings.html"><span data-i18n="gatheringCta">See what's happening</span><span aria-hidden="true">↗</span></a>
-          </div>
-          <div class="gathering-card">
-            <div class="gathering-card-top"><span data-i18n="gatheringCardLabel">THE AFTER-HOURS NOTICEBOARD</span><span>TC — VR</span></div>
-            <p class="calendar-label" data-i18n="gatheringWhenLabel">WHEN THE LOBBY COMES ALIVE</p>
-            <div class="night-window"><span class="night-clock" aria-hidden="true">✳</span><div><strong data-i18n="gatheringWhen">PAST MIDNIGHT</strong><span data-i18n="gatheringTimezone">GMT−3 · WHENEVER THE NIGHT OWLS ARRIVE</span></div></div>
-            <h3 data-i18n-html="gatheringCardTitle">No stiff schedule.<br><em>Just good company.</em></h3>
-            <p class="calendar-detail" data-i18n="gatheringCardText">Workshops, shared art, movie nights, and other good excuses to stay up. Drop into Discord for the latest plan.</p>
-            <a class="card-link" href="gatherings.html#noticeboard"><span data-i18n="gatheringCardLink">Check the noticeboard</span><span aria-hidden="true">↗</span></a>
-            <div class="coin-note"><span class="coin-token" aria-hidden="true"><span>✳</span></span><p><strong data-i18n="coinTitle">A little house coin lore</strong><span data-i18n="coinText">A nod to the golden coin: around here, good company is the currency. No dues, no points — just a seat at the table.</span></p></div>
-          </div>
-        </section>
-
-        <section class="about section-pad reveal-on-scroll" id="about" aria-labelledby="about-title">
-          <div class="about-heading">
-            <p class="eyebrow" data-i18n="aboutEyebrow">THE PEOPLE BEHIND THE LOBBY</p>
-            <h2 id="about-title" data-i18n-html="aboutTitle">Odd hours.<br><em>Good people.</em></h2>
-            <p data-i18n="aboutIntro">We're a small crew with different interests and the same open-door policy. Say hello about art, avatars, aviation, languages, or absolutely anything else.</p>
-          </div>
-          <div class="profile-grid">
-            <article class="profile-card" data-file="FILE 001">
-              <div class="profile-top"><span class="profile-monogram">P.</span><div><p class="profile-role" data-i18n="prickettRole">ART · CODE · 2D / 3D</p><h3>Prickett</h3></div></div>
-              <p class="profile-bio" data-i18n="prickettBio">Art and IT undergraduate: I code, draw, and make things in 2D and 3D. I speak English and Portuguese, and I'm learning Chinese and other languages. I'm autistic, easygoing, and always happy to chat about pretty much anything.</p>
-              <a class="profile-link" href="https://guns.lol/prickett" target="_blank" rel="noopener noreferrer"><span data-i18n="prickettLink">Find Prickett online</span><span aria-hidden="true">↗</span></a>
-            </article>
-            <article class="profile-card" data-file="FILE 002">
-              <div class="profile-top"><span class="profile-monogram">N.</span><div><p class="profile-role" data-i18n="nekozuskaRole">OWNER · VIP</p><h3>Nekozuska</h3></div></div>
-              <p class="profile-bio" data-i18n="nekozuskaBio">The owner. Easygoing, a little mysterious, VIP energy, and known to change moods like the weather. Come say hi; you might catch a different chapter.</p>
-              <span class="profile-signoff" data-i18n="nekozuskaSignoff">THE HOUSE HAS ITS MYSTERIES.</span>
-            </article>
-            <article class="profile-card" data-file="FILE 003">
-              <div class="profile-top"><span class="profile-monogram">S.</span><div><p class="profile-role" data-i18n="succubiRole">FLIGHT DECK · AGENT 007</p><h3>Succubi</h3></div></div>
-              <p class="profile-bio" data-i18n="succubiBio">Self-appointed sad-boy Agent 007: zero failures, zero risk, and 7,000 hours in flight simulator. Flight stories, questionable bravado, and good company come standard.</p>
-              <span class="profile-signoff" data-i18n="succubiSignoff">0 FAILURES · 0 RISK · 7K HOURS</span>
-            </article>
-          </div>
         </section>
 
         <section class="community section-pad reveal-on-scroll" id="community" aria-labelledby="community-title">
