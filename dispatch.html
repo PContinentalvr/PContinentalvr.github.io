@@ -4,23 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#10100e">
-    <meta name="description" content="Workshops, art, films, and community notes from The Continental VR social house.">
+    <meta name="description" content="House notices from the front desk: workshops, art, film nights, and community news.">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self'; form-action 'self'; upgrade-insecure-requests">
-    <title>Dispatch — The Continental</title>
+    <title>House Bulletin — The Continental</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=7.0.9">
-    <script src="script.js?v=7.0.9" defer></script>
+    <link rel="stylesheet" href="style.css?v=7.0.10">
+    <script src="script.js?v=7.0.10" defer></script>
   </head>
   <body class="inner-page dispatch-page">
     <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
     <div class="site-shell">
       <header class="site-header">
-        <a class="wordmark" href="index.html" aria-label="The Continental, home" data-i18n-aria="home"><span class="wordmark-icon" aria-hidden="true"><span>C</span></span><span class="wordmark-copy"><strong>THE CONTINENTAL</strong><small data-i18n="houseLabel">VR SOCIAL HOUSE</small></span></a>
+        <a class="wordmark" href="index.html" aria-label="The Continental, home" data-i18n-aria="home"><span class="wordmark-icon" aria-hidden="true"><span>C</span></span><span class="wordmark-copy"><strong>THE CONTINENTAL</strong><small data-i18n="houseLabel">A VRCHAT SOCIAL HOUSE</small></span></a>
         <nav class="site-nav" id="site-navigation" aria-label="Main navigation" data-i18n-aria="navigation">
-          <a href="index.html" data-i18n="navHome">The lobby</a><a href="dispatch.html" aria-current="page" data-i18n="navDispatch">Dispatch</a><a href="gatherings.html" data-i18n="navGatherings">Gatherings</a><a href="people.html" data-i18n="navAbout">The people</a><a class="nav-join" href="index.html#community"><span data-i18n="navJoin">Find your people</span> <span aria-hidden="true">↗</span></a>
+          <a href="index.html" data-i18n="navHome">The lobby</a><a href="dispatch.html" aria-current="page" data-i18n="navDispatch">House Bulletin</a><a href="gatherings.html" data-i18n="navGatherings">Evenings &amp; Events</a><a href="people.html" data-i18n="navAbout">The Registry</a><a class="nav-join" href="index.html#community"><span data-i18n="navJoin">Request an invitation</span> <span aria-hidden="true">↗</span></a>
         </nav>
         <div class="header-tools">
           <button class="tool-button watch-toggle" type="button" aria-expanded="false" aria-controls="watch-panel" aria-label="Open the pocket watch" data-i18n-aria="openWatch"><svg class="watch-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6m-5 0v2m4-2v2m-5 0h6l1 2a8 8 0 1 1-8 0l1-2Zm3 4v5l3 2"/><path d="M12 1v2m0 18v2"/></svg><span class="watch-label" data-i18n="watchLabel">Pocket watch</span></button>
@@ -37,27 +37,42 @@
       </header>
       <audio id="house-audio" src="assets/backgroundost.mp3" loop preload="metadata"></audio>
       <main id="main">
-        <section class="inner-hero section-pad"><p class="eyebrow"><span class="status-dot"></span><span data-i18n="dispatchEyebrow">FRESH FROM THE LOBBY</span></p><h1 data-i18n-html="dispatchTitle">The <em>dispatch.</em></h1><p data-i18n="pageDispatchDeck">A little of everything we're making, learning, watching, and sharing.</p><span class="inner-hero-stamp" aria-hidden="true">TC / 01</span></section>
-        <section class="dispatch section-pad inner-content" aria-label="Community activities">
-          <div class="dispatch-toolbar">
-            <p data-i18n="dispatchIntro">Workshops, art, films, and whatever else the night brings.</p>
-            <div class="dispatch-filter-controls">
-              <div class="feed-filters" role="group" aria-label="Filter dispatch posts" data-i18n-aria="filterLabel"><button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true"><span data-i18n="filterAll">Everything</span> <span aria-hidden="true">06</span></button><button class="filter-button" type="button" data-filter="workshop" aria-pressed="false" data-i18n="filterWorkshop">Workshops</button><button class="filter-button" type="button" data-filter="art" aria-pressed="false" data-i18n="filterArt">Art</button><button class="filter-button" type="button" data-filter="movie" aria-pressed="false" data-i18n="filterMovies">Movie nights</button><button class="filter-button" type="button" data-filter="notes" aria-pressed="false" data-i18n="filterNotes">House notes</button></div>
-              <button class="filter-rotation-toggle" type="button" aria-label="Pause category rotation" data-i18n-aria="pauseFilterRotation" aria-pressed="false" title="Pause category rotation"><span class="filter-rotation-icon" aria-hidden="true">Ⅱ</span></button>
+        <section class="inner-hero section-pad"><p class="eyebrow"><span class="status-dot"></span><span data-i18n="dispatchEyebrow">A WORD FROM THE FRONT DESK</span></p><h1 data-i18n-html="dispatchTitle">The house<br><em>bulletin.</em></h1><p data-i18n="pageDispatchDeck">Notices from the front desk: what the house is making, learning, and watching.</p><span class="inner-hero-stamp" aria-hidden="true">TC / 01</span></section>
+        <section class="dispatch section-pad inner-content" aria-label="Community activities" data-i18n-aria="dispatchActivitiesLabel">
+          <div class="dispatch-feature-heading">
+            <p class="eyebrow"><span class="status-dot"></span><span data-i18n="dispatchFeatureLabel">A NOTICE FROM THE HOUSE</span></p>
+            <div class="dispatch-carousel-controls">
+              <button class="dispatch-control" type="button" data-dispatch-action="previous-feature" data-i18n-aria="previousDispatchItem" aria-label="Previous feature">←</button>
+              <span class="dispatch-position" id="dispatch-feature-position" aria-live="off">— / —</span>
+              <button class="dispatch-control" type="button" data-dispatch-action="next-feature" data-i18n-aria="nextDispatchItem" aria-label="Next feature">→</button>
+              <button class="dispatch-control dispatch-rotation-toggle" type="button" data-dispatch-action="toggle-rotation" data-i18n-aria="pauseDispatchRotation" aria-label="Pause automatic rotation" aria-pressed="false" title="Pause automatic rotation"><span class="dispatch-rotation-icon" aria-hidden="true">Ⅱ</span></button>
             </div>
           </div>
-          <div class="dispatch-grid inner-dispatch-grid" aria-live="polite">
-            <article class="dispatch-card" data-category="workshop"><div class="dispatch-icon" aria-hidden="true">✳</div><div class="card-body"><div class="card-meta"><span data-i18n="metaWorkshop">AVATAR WORKSHOP</span><span>01 / 06</span></div><h2 data-i18n-html="postWorkshopTitle">Make your avatar<br><em>more you.</em></h2><p data-i18n="postWorkshopText">Friendly, hands-on sessions for customizing VRChat avis. Bring a work in progress, ask questions, and learn at your own pace.</p><a class="card-link" data-community="discord" href="https://discord.gg/3VUYgddZGP" target="_blank" rel="noopener noreferrer"><span data-i18n="postWorkshopLink">Learn together</span><span aria-hidden="true">↗</span></a></div></article>
-            <article class="dispatch-card" data-category="art"><div class="dispatch-icon" aria-hidden="true">♧</div><div class="card-body"><div class="card-meta"><span data-i18n="metaArt">ART & SHOW-AND-TELL</span><span>02 / 06</span></div><h2 data-i18n-html="postArtTitle">Made by hand.<br><em>Shared with friends.</em></h2><p data-i18n="postArtText">Drawing, digital art, 2D, 3D, and works in progress. Pull up a chair, share what you're making, or just enjoy the studio company.</p><a class="card-link" data-community="discord" href="https://discord.gg/3VUYgddZGP" target="_blank" rel="noopener noreferrer"><span data-i18n="postArtLink">Bring your creativity</span><span aria-hidden="true">↗</span></a></div></article>
-            <article class="dispatch-card" data-category="movie"><div class="dispatch-icon" aria-hidden="true">◉</div><div class="card-body"><div class="card-meta"><span data-i18n="metaMovie">MOVIE NIGHT</span><span>03 / 06</span></div><h2 data-i18n-html="postMovieTitle">One more film.<br><em>One more friend.</em></h2><p data-i18n="postMovieText">Settle in for a shared screening and the conversation that follows. Check Discord for what's on and how to join.</p><a class="card-link" data-community="discord" href="https://discord.gg/3VUYgddZGP" target="_blank" rel="noopener noreferrer"><span data-i18n="postMovieLink">Find the next screening</span><span aria-hidden="true">↗</span></a></div></article>
-            <article class="dispatch-card" data-category="workshop"><div class="dispatch-icon" aria-hidden="true">◇</div><div class="card-body"><div class="card-meta"><span data-i18n="metaCreator">LEARN & EXPERIMENT</span><span>04 / 06</span></div><h2 data-i18n-html="postCreatorTitle">Curious how<br><em>it's made?</em></h2><p data-i18n="postCreatorText">Swap creative tips, explore tools, and ask the questions you've been sitting on. Beginners, hobbyists, and pros all welcome.</p><a class="card-link" data-community="discord" href="https://discord.gg/3VUYgddZGP" target="_blank" rel="noopener noreferrer"><span data-i18n="postCreatorLink">Ask the community</span><span aria-hidden="true">↗</span></a></div></article>
-            <article class="dispatch-card" data-category="notes"><div class="dispatch-icon" aria-hidden="true">♠</div><div class="card-body"><div class="card-meta"><span data-i18n="metaDress">THE DRESS CODE</span><span>05 / 06</span></div><h2 data-i18n-html="postDressTitle">A little <em>fancy.</em><br>Entirely yourself.</h2><p data-i18n="postDressText">Dress sharp if you feel like it: our house leans fancy. Come in your own style, respect one another, and make yourself at home.</p><a class="card-link" href="people.html"><span data-i18n="postDressLink">Meet the house</span><span aria-hidden="true">↗</span></a></div></article>
-            <article class="dispatch-card" data-category="notes"><div class="dispatch-icon" aria-hidden="true">✧</div><div class="card-body"><div class="card-meta"><span data-i18n="metaLate">AROUND THE HOUSE</span><span>06 / 06</span></div><h2 data-i18n-html="postLateTitle">The hour gets<br><em>a little later.</em></h2><p data-i18n="postLateText">Most of our hangouts happen past midnight, GMT−3. No strict start time: the lobby wakes up when the night owls arrive.</p><a class="card-link" href="gatherings.html"><span data-i18n="postLateLink">Find us after hours</span><span aria-hidden="true">↗</span></a></div></article>
+          <div class="dispatch-feature-viewport" role="region" aria-roledescription="carousel" data-i18n-aria="dispatchFeatureLabel">
+            <div class="dispatch-feature" id="dispatch-feature" aria-live="off"></div>
           </div>
+          <div class="dispatch-toolbar">
+            <p data-i18n="dispatchIntro">Workshops, art, films, and other reasons to stay a little longer.</p>
+            <div class="dispatch-filter-controls">
+              <div class="feed-filters" id="dispatch-filters" role="group" aria-label="Filter dispatch posts" data-i18n-aria="filterLabel"></div>
+            </div>
+          </div>
+          <section class="dispatch-results" id="dispatch-results" aria-label="Filtered dispatch posts" data-i18n-aria="dispatchResultsLabel" hidden>
+            <div class="dispatch-results-heading">
+              <p class="eyebrow" id="dispatch-results-label"></p>
+              <div class="dispatch-page-controls" id="dispatch-page-controls" hidden>
+                <button class="dispatch-control" type="button" data-dispatch-action="previous-page" data-i18n-aria="previousDispatchPage" aria-label="Previous posts">←</button>
+                <span class="dispatch-position" id="dispatch-page-position" aria-live="polite"></span>
+                <button class="dispatch-control" type="button" data-dispatch-action="next-page" data-i18n-aria="nextDispatchPage" aria-label="Next posts">→</button>
+              </div>
+            </div>
+            <div class="dispatch-grid inner-dispatch-grid" id="dispatch-grid" aria-live="polite"></div>
+          </section>
+          <p class="dispatch-feed-status" id="dispatch-feed-status" role="status" hidden></p>
         </section>
-        <section class="community section-pad inner-cta"><p class="eyebrow"><span class="status-dot"></span><span data-i18n="communityEyebrow">YOUR PEOPLE ARE HERE</span></p><h2 data-i18n-html="communityTitle">The doors are <em>open.</em></h2><p class="community-description" data-i18n-html="communityDescription">Find the group on VRChat. Find the plan on Discord.<br>We'll save you a seat.</p><div class="community-actions"><a class="button button-gold" data-community="vrchat" href="https://vrchat.com/home/groups" target="_blank" rel="noopener noreferrer"><span data-i18n="vrchatButton">Find us on VRChat</span><span aria-hidden="true">↗</span></a><a class="button button-discord" data-community="discord" href="https://discord.gg/3VUYgddZGP" target="_blank" rel="noopener noreferrer"><span data-i18n="discordButton">Join the Discord</span><span aria-hidden="true">↗</span></a></div></section>
+        <section class="community section-pad inner-cta"><p class="eyebrow"><span class="status-dot"></span><span data-i18n="communityEyebrow">YOUR ROOM IS READY</span></p><h2 data-i18n-html="communityTitle">The house is <em>open.</em></h2><p class="community-description" data-i18n-html="communityDescription">Check in with us on VRChat. Find the plans on Discord.<br>Your place is at the table.</p><div class="community-actions"><a class="button button-gold" data-community="vrchat" href="https://vrchat.com/home/group/grp_1046a0f0-f51c-41c5-b09b-319db949587a" target="_blank" rel="noopener noreferrer"><span data-i18n="vrchatButton">Check in on VRChat</span><span aria-hidden="true">↗</span></a><a class="button button-discord" data-community="discord" href="https://discord.gg/3VUYgddZGP" target="_blank" rel="noopener noreferrer"><span data-i18n="discordButton">Request a Discord invitation</span><span aria-hidden="true">↗</span></a></div></section>
       </main>
-      <footer class="site-footer"><a class="wordmark footer-wordmark" href="index.html" aria-label="The Continental, home" data-i18n-aria="home"><span class="wordmark-icon" aria-hidden="true"><span>C</span></span><span class="wordmark-copy"><strong>THE CONTINENTAL</strong><small data-i18n="houseLabel">VR SOCIAL HOUSE</small></span></a><p data-i18n="disclaimer">AN UNOFFICIAL FAN COMMUNITY. NOT AFFILIATED WITH THE CONTINENTAL, LIONSGATE, OR JOHN WICK.</p><a class="back-top" href="#main"><span data-i18n="backToLobby">BACK TO THE LOBBY</span><span aria-hidden="true">↑</span></a></footer>
+      <footer class="site-footer"><a class="wordmark footer-wordmark" href="index.html" aria-label="The Continental, home" data-i18n-aria="home"><span class="wordmark-icon" aria-hidden="true"><span>C</span></span><span class="wordmark-copy"><strong>THE CONTINENTAL</strong><small data-i18n="houseLabel">A VRCHAT SOCIAL HOUSE</small></span></a><p data-i18n="disclaimer">An unofficial fan community. Not affiliated with The Continental, Lionsgate, or John Wick.</p><a class="back-top" href="#main"><span data-i18n="backToLobby">RETURN TO THE LOBBY</span><span aria-hidden="true">↑</span></a></footer>
     </div>
   </body>
 </html>

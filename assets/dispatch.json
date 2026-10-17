@@ -1,0 +1,202 @@
+{
+  "categories": [
+    {
+      "id": "workshop",
+      "label": {
+        "en": "Workshops",
+        "pt": "Oficinas"
+      }
+    },
+    {
+      "id": "art",
+      "label": {
+        "en": "Art",
+        "pt": "Arte"
+      }
+    },
+    {
+      "id": "movie",
+      "label": {
+        "en": "Film evenings",
+        "pt": "Noites de filme"
+      }
+    },
+    {
+      "id": "notes",
+      "label": {
+        "en": "House notices",
+        "pt": "Avisos da casa"
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "avatar-workshop",
+      "category": "workshop",
+      "icon": "✳",
+      "meta": {
+        "en": "THE TAILOR'S DESK · AVATARS",
+        "pt": "ATELIÊ DA CASA · AVATARES"
+      },
+      "title": {
+        "en": {
+          "lead": "A little tailoring",
+          "accent": "for your avatar."
+        },
+        "pt": {
+          "lead": "Um ajuste aqui",
+          "accent": "outro ali."
+        }
+      },
+      "body": {
+        "en": "The Tailor welcomes guests learning to customise VRChat avatars. Bring a work in progress, ask freely, and learn at your own pace.",
+        "pt": "O ateliê recebe quem quer aprender a personalizar avatares no VRChat. Traga seu projeto, tire dúvidas e aprenda no seu ritmo."
+      },
+      "linkLabel": {
+        "en": "Visit the Tailor",
+        "pt": "Visite o ateliê"
+      },
+      "href": "https://discord.gg/3VUYgddZGP"
+    },
+    {
+      "id": "art-room",
+      "category": "art",
+      "icon": "♧",
+      "meta": {
+        "en": "THE SALON · ART & SHOW-AND-TELL",
+        "pt": "SALÃO DA CASA · ARTE E MOSTRA"
+      },
+      "title": {
+        "en": {
+          "lead": "Made with care.",
+          "accent": "Received in good company."
+        },
+        "pt": {
+          "lead": "Feito com carinho.",
+          "accent": "Em boa companhia."
+        }
+      },
+      "body": {
+        "en": "Drawing, digital art, 2D, 3D, and works in progress are welcome in the salon. Share a piece, sketch with us, or simply enjoy the company.",
+        "pt": "Desenho, arte digital, 2D, 3D e projetos em andamento têm lugar no salão. Mostre seu trabalho, desenhe com a gente ou aproveite a companhia."
+      },
+      "linkLabel": {
+        "en": "Enter the salon",
+        "pt": "Entre no salão"
+      },
+      "href": "https://discord.gg/3VUYgddZGP"
+    },
+    {
+      "id": "movie-night",
+      "category": "movie",
+      "icon": "◉",
+      "meta": {
+        "en": "THE SCREENING ROOM",
+        "pt": "SALA DE CINEMA"
+      },
+      "title": {
+        "en": {
+          "lead": "A seat is waiting.",
+          "accent": "The film can begin."
+        },
+        "pt": {
+          "lead": "Tem um lugar.",
+          "accent": "O filme já vai começar."
+        }
+      },
+      "body": {
+        "en": "Settle into the screening room and stay for the conversation after. The front desk on Discord has the programme and admission details.",
+        "pt": "Escolha um lugar na sala e fique para o papo depois. A recepção no Discord informa a programação e como participar."
+      },
+      "linkLabel": {
+        "en": "Ask the front desk",
+        "pt": "Consulte a recepção"
+      },
+      "href": "https://discord.gg/3VUYgddZGP"
+    },
+    {
+      "id": "creative-corner",
+      "category": "workshop",
+      "icon": "◇",
+      "meta": {
+        "en": "THE CONCIERGE'S DESK",
+        "pt": "MESA DO CONCIERGE"
+      },
+      "title": {
+        "en": {
+          "lead": "A question?",
+          "accent": "The house is listening."
+        },
+        "pt": {
+          "lead": "Ficou com uma dúvida?",
+          "accent": "A casa ajuda."
+        }
+      },
+      "body": {
+        "en": "Trade creative notes, try a new tool, or ask the question you have been saving. New arrivals and familiar faces are equally welcome.",
+        "pt": "Troque ideias, experimente uma ferramenta ou faça aquela pergunta que estava guardando. Quem acabou de chegar e quem já é de casa são bem-vindos."
+      },
+      "linkLabel": {
+        "en": "Ask the Concierge",
+        "pt": "Fale com o concierge"
+      },
+      "href": "https://discord.gg/3VUYgddZGP"
+    },
+    {
+      "id": "dress-code",
+      "category": "notes",
+      "icon": "♠",
+      "meta": {
+        "en": "THE HOUSE ETIQUETTE",
+        "pt": "A ETIQUETA DA CASA"
+      },
+      "title": {
+        "en": {
+          "lead": "A little finery.",
+          "accent": "Entirely yourself."
+        },
+        "pt": {
+          "lead": "Um toque de elegância.",
+          "accent": "Sem deixar de ser você."
+        }
+      },
+      "body": {
+        "en": "The house favours a little elegance, should you feel so inclined. Come as yourself, mind your manners, and make yourself at home. No drama or harassment; every guest belongs here.",
+        "pt": "A casa gosta de um toque elegante, se você estiver a fim. Venha do seu jeito, seja gentil e fique à vontade. Sem drama ou assédio: toda pessoa é bem-vinda."
+      },
+      "linkLabel": {
+        "en": "Meet the household",
+        "pt": "Conheça a casa"
+      },
+      "href": "people.html"
+    },
+    {
+      "id": "late-night-lobby",
+      "category": "notes",
+      "icon": "✧",
+      "meta": {
+        "en": "THE NIGHT SHIFT",
+        "pt": "TURNO DA NOITE"
+      },
+      "title": {
+        "en": {
+          "lead": "The clock may wander.",
+          "accent": "The welcome will not."
+        },
+        "pt": {
+          "lead": "O relógio pode atrasar.",
+          "accent": "As boas-vindas, não."
+        }
+      },
+      "body": {
+        "en": "Most gatherings begin after midnight, GMT−3. There is no strict hour; the lobby comes to life when the night owls arrive.",
+        "pt": "A maioria dos encontros começa depois da meia-noite, no fuso GMT−3. Sem horário rígido: o saguão ganha vida quando a turma da madrugada chega."
+      },
+      "linkLabel": {
+        "en": "Join the evening",
+        "pt": "Venha para a noite"
+      },
+      "href": "gatherings.html"
+    }
+  ]
+}

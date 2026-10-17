@@ -1,33 +1,45 @@
 const COMMUNITY_LINKS = {
-  vrchat: "https://vrchat.com/home/groups",
+  vrchat: "https://vrchat.com/home/group/grp_1046a0f0-f51c-41c5-b09b-319db949587a",
   discord: "https://discord.gg/3VUYgddZGP",
 };
 
 const DEFAULT_NOTICE_FEED = "assets/notices.json";
+const DEFAULT_DISPATCH_FEED = "assets/dispatch.json";
+const DISPATCH_PAGE_SIZE = 3;
+const DISPATCH_FEATURE_INTERVAL_MS = 8000;
+const DISPATCH_PAGE_INTERVAL_MS = 10000;
+let cachedDispatchFeed = null;
+let dispatchFeedRequest = null;
+let dispatchFeatureInterval = null;
+let dispatchPageInterval = null;
+let dispatchRotationPaused = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let selectedDispatchCategory = "all";
+let dispatchFeatureIndex = 0;
+let dispatchPageIndex = 0;
 
 const translations = {
   en: {
     skip: "Skip to content",
     home: "The Continental, home",
-    houseLabel: "VR SOCIAL HOUSE",
+    houseLabel: "A VRCHAT SOCIAL HOUSE",
     navigation: "Main navigation",
     navHome: "The lobby",
-    navDispatch: "The Dispatch",
-    navGatherings: "Gatherings",
-    navAbout: "Our People",
-    navJoin: "Find your people",
+    navDispatch: "House Bulletin",
+    navGatherings: "Evenings & Events",
+    navAbout: "The Registry",
+    navJoin: "Request an invitation",
     exploreHouse: "Explore the house",
     switchLanguage: "Switch language to Portuguese",
     openWatch: "Open the pocket watch",
     closeWatch: "Close the pocket watch",
     watchLabel: "Pocket watch",
     watchKicker: "THE HOUSE CHRONOMETER",
-    watchTitle: "The house at a glance",
+    watchTitle: "The house, by the hour",
     watchLocal: "YOUR TIME · LOCAL",
     watchHouse: "THE HOUSE · GMT−3",
-    watchSky: "A LITTLE SKY FOR THE LATE SHIFT",
-    watchFooter: "THE NIGHT IS STILL YOUNG.",
-    rabbitCaption: "FOLLOW THE WHITE RABBIT",
+    watchSky: "A SMALL SKY FOR THE NIGHT WATCH",
+    watchFooter: "THERE IS TIME YET.",
+    rabbitCaption: "A QUIET GUIDE THROUGH THE HOUSE",
     playMusic: "Play background music",
     pauseMusic: "Pause background music",
     musicOff: "Play house music",
@@ -38,161 +50,132 @@ const translations = {
     volumeLabel: "HOUSE MUSIC · VOLUME",
     openMenu: "Open navigation",
     closeMenu: "Close navigation",
-    noticeEyebrow: "LATEST FROM THE NOTICEBOARD",
-    noticeTitle: "A note from<br><em>the late shift.</em>",
-    noticeDescription: "The latest news, plans, and little dispatches from the house.",
-    noticeCta: "Read the latest notices",
-    noticeQuiet: "The board is quiet for now. Check back after the next late-night gathering.",
-    noticeFailed: "The noticeboard is taking a moment. The latest updates are always on Discord.",
+    noticeEyebrow: "FROM THE FRONT DESK",
+    noticeTitle: "A word from<br><em>the house.</em>",
+    noticeDescription: "Notices, plans, and small happenings, entered in the house ledger.",
+    noticeCta: "Read the house notices",
+    noticeQuiet: "The ledger is quiet for the moment. Pray return after the next gathering.",
+    noticeFailed: "The ledger is unavailable just now. The latest notices remain on Discord.",
     noticePostedBy: "POSTED BY",
     noticeDiscord: "OPEN THE DISCORD NOTICEBOARD",
     noticeUpdated: "LAST CHECKED",
-    routeDispatchMeta: "NOTES FROM THE HOUSE",
-    routeDispatchTitle: "What we're<br>making.",
+    routeDispatchMeta: "THE FRONT-DESK LEDGER",
+    routeDispatchTitle: "A word from<br>the house.",
     routeGatheringMeta: "THE HOUSE CALENDAR",
-    routeGatheringTitle: "Where the<br>night goes.",
-    routePeopleMeta: "THE HOUSE ROSTER",
-    routePeopleTitle: "A few people<br>to meet.",
-    routeOpen: "OPEN THE FILE ↗",
-    pageDispatchTitle: "Dispatch & happenings",
-    pageDispatchDeck: "A little of what we're making, learning, watching, and sharing.",
-    pageGatheringTitle: "The after-hours noticeboard",
-    pageGatheringDeck: "Plans, time zones, member notes, and the latest from the house.",
-    pagePeopleTitle: "The people behind the lobby",
-    pagePeopleDeck: "Different interests, the same open door. Meet the crew who keep the lights on.",
-    liveNoticeEyebrow: "LATEST HOUSE NOTICES",
-    liveNoticeTitle: "Straight from<br><em>the noticeboard.</em>",
-    noticeSource: "This public noticeboard shows recent community announcements. Open Discord to join the conversation.",
+    routeGatheringTitle: "An evening<br>well spent.",
+    routePeopleMeta: "THE GUEST REGISTRY",
+    routePeopleTitle: "Meet the<br>household.",
+    routeOpen: "VIEW THE ENTRY ↗",
+    pageDispatchTitle: "The house bulletin",
+    pageDispatchDeck: "Notices from the front desk: what the house is making, learning, and watching.",
+    pageGatheringTitle: "Evenings at the house",
+    pageGatheringDeck: "Gatherings, local hours, and the latest notices from the front desk.",
+    pagePeopleTitle: "The house registry",
+    pagePeopleDeck: "Meet the residents and keepers of this small VRChat social house.",
+    liveNoticeEyebrow: "THE FRONT-DESK LEDGER",
+    liveNoticeTitle: "Entered in<br><em>the house book.</em>",
+    noticeSource: "Recent public notices from the house. Visit Discord to join the conversation.",
     noticeLoading: "Checking the noticeboard…",
-    dispatchScheduleLabel: "NO FIXED SCHEDULE",
-    dispatchScheduleTitle: "The evening has<br><em>room to wander.</em>",
-    dispatchScheduleText: "We usually meet after midnight, GMT−3. There might be avatar sessions, art, a film, or simply good conversation when the night owls arrive.",
-    peopleIntroTitle: "A small crew.<br><em>An open door.</em>",
+    dispatchScheduleLabel: "BY THE HOUSE CLOCK",
+    dispatchScheduleTitle: "The evening is<br><em>yours to keep.</em>",
+    dispatchScheduleText: "We gather after midnight, GMT−3: avatar sessions, art, a film, or a conversation with no need to watch the clock.",
+    peopleIntroTitle: "A small household.<br><em>A generous welcome.</em>",
     currencyTitle: "GOLD · COMMUNITY CURRENCY",
-    communityRule: "Be kind, respect the people and the spaces, and make room for another chair.",
-    discordLatest: "For the latest word, visit our noticeboard on Discord.",
-    heroEyebrow: "AN OPEN INVITATION",
-    heroSubEyebrow: "EST. IN VR",
-    heroTitle: "A little more<br>after <em>hours.</em>",
-    heroDescription: "A VRChat house for the curious and creative. Learn a new way to customise your avatar, share what you're making, catch a film, or stay for another good conversation.",
-    heroCta: "Come on in",
-    heroBrowse: "See what's happening",
-    dressCode: "A TOUCH OF FINERY. ENTIRELY YOURSELF.",
-    heroArtAlt: "Original illustration of a golden-lit hotel entrance at night",
+    communityRule: "No drama or harassment. Be courteous, respect every person and space, and leave room for the next guest.",
+    discordLatest: "For the latest notice, consult the front desk on Discord.",
+    heroEyebrow: "THE HOUSE IS OPEN",
+    heroSubEyebrow: "A VRCHAT SOCIAL HOUSE",
+    heroTitle: "Your room<br>for the <em>evening.</em>",
+    heroDescription: "A VRChat social house for curious, creative guests. Learn to customise an avatar, share a work in progress, join a film, or stay for another conversation. No drama or harassment; every guest deserves to feel safe and welcome.",
+    heroCta: "Check in",
+    heroBrowse: "Consult the house bulletin",
+    dressCode: "A LITTLE FINERY, IF YOU PLEASE. ALWAYS YOURSELF.",
+    heroArtAlt: "Original illustration of the house entrance glowing warmly at night",
     signTop: "A HOUSE BETWEEN WORLDS",
-    signBottom: "ROOM FOR ONE MORE",
-    artCaptionCompany: "✳ GOOD COMPANY",
-    artCaption: "AFTER HOURS · GMT−3",
-    artSideLabel: "YOUR WORLD, YOUR WAY",
-    scrollExplore: "SCROLL TO EXPLORE",
-    tickerLabel: "Community motto",
-    tickerOne: "DRESS WELL · BE KIND",
-    tickerTwo: "PAST MIDNIGHT · GMT−3",
-    tickerThree: "MAKE SOMETHING TOGETHER",
-    tickerFour: "THERE'S ROOM FOR ONE MORE",
-    dispatchEyebrow: "FRESH FROM THE LOBBY",
-    dispatchTitle: "The <em>dispatch.</em>",
+    signBottom: "THE DOOR IS OPEN",
+    artCaptionCompany: "✳ GOOD COMPANY, WELL RECEIVED",
+    artCaption: "THE LATE SHIFT · GMT−3",
+    artSideLabel: "YOUR ROOM, YOUR OWN WAY",
+    scrollExplore: "CONTINUE THROUGH THE HOUSE",
+    tickerLabel: "House welcome",
+    tickerOne: "GOOD MANNERS · GOOD COMPANY",
+    tickerTwo: "THE LATE SHIFT · GMT−3",
+    tickerThree: "MAKE SOMETHING IN GOOD COMPANY",
+    tickerFour: "THERE IS ALWAYS ROOM FOR ONE MORE",
+    dispatchEyebrow: "A WORD FROM THE FRONT DESK",
+    dispatchTitle: "The house<br><em>bulletin.</em>",
     moreFromHouse: "Join the conversation",
-    dispatchIntro: "Workshops, art, films, and whatever else the night brings.",
-    filterLabel: "Filter dispatch posts",
-    filterAll: "Everything",
-    filterWorkshop: "Workshops",
-    filterArt: "Art",
-    filterMovies: "Movie nights",
-    filterNotes: "House notes",
-    pauseFilterRotation: "Pause category rotation",
-    resumeFilterRotation: "Resume category rotation",
-    catWorkshop: "HANDS-ON WORKSHOP",
-    metaWorkshop: "AVATAR CUSTOMISATION",
-    postWorkshopTitle: "Make your avatar<br><em>more you.</em>",
-    postWorkshopText: "Friendly sessions on customising VRChat avatars. Bring a work in progress, ask questions, and learn at your own pace.",
-    postWorkshopLink: "Learn together",
-    catArt: "THE ART ROOM",
-    metaArt: "ART & SHOW-AND-TELL",
-    artImageText: "MAKE<br>THINGS<br>TOGETHER",
-    postArtTitle: "Made by hand.<br><em>Shared with friends.</em>",
-    postArtText: "Drawing, digital art, 2D, 3D, and works in progress. Share what you're making, sketch with us, or just enjoy the studio company.",
-    postArtLink: "Bring your creativity",
-    catMovie: "AFTER-HOURS SCREENING",
-    metaMovie: "MOVIE NIGHT",
-    movieImageText: "LIGHTS<br>LOW<br>FILM<br>ON",
-    movieImageTag: "MOVIE NIGHT",
-    postMovieTitle: "One more film.<br><em>One more friend.</em>",
-    postMovieText: "Settle in for a shared screening and stay for the conversation after. Check Discord for what's on and how to join.",
-    postMovieLink: "Find the next screening",
-    catCreator: "CREATOR'S CORNER",
-    creatorImageText: "MAKE<br>IT YOURS",
-    metaCreator: "LEARN & EXPERIMENT",
-    postCreatorTitle: "Curious how<br><em>it's made?</em>",
-    postCreatorText: "Swap creative tips, try a new tool, or ask the question you've been sitting on. Beginners and old hands are welcome.",
-    postCreatorLink: "Ask the community",
-    catHouse: "A NOTE FROM THE HOUSE",
-    metaDress: "THE DRESS CODE",
-    houseImageText: "DRESS<br>SHARP<br>BE KIND",
-    postDressTitle: "A little <em>fancy.</em><br>Entirely yourself.",
-    postDressText: "The house leans elegant, should you feel like dressing up. Come as yourself, show respect, and make yourself at home.",
-    postDressLink: "Meet the house",
-    catLate: "LATE-NIGHT LOBBY",
-    metaLate: "AROUND THE HOUSE",
-    postLateTitle: "The hour gets<br><em>a little later.</em>",
-    postLateText: "Most of our hangouts happen after midnight, GMT−3. No strict start time: the lobby wakes up when the night owls arrive.",
-    postLateLink: "Find us after hours",
-    gatheringEyebrow: "THE NIGHT IS YOURS",
-    gatheringTitle: "Make a night<br>of <em>it.</em>",
-    gatheringText: "Avatar workshops, art sessions, movie nights, and room for an unhurried conversation. We make things together and see where the evening goes.",
-    gatheringCta: "See what's happening",
-    gatheringCardLabel: "THE HOUSE NOTICEBOARD",
-    gatheringWhenLabel: "WHEN THE LOBBY COMES ALIVE",
+    dispatchIntro: "Workshops, art, films, and other reasons to stay a little longer.",
+    filterLabel: "Filter house notices",
+    dispatchFeatureLabel: "A NOTICE FROM THE HOUSE",
+    dispatchNoItems: "No entries under this heading just yet.",
+    dispatchFeedError: "The house bulletin could not be loaded. Please try again later.",
+    dispatchPosition: "FEATURE {current} OF {total}",
+    dispatchPagePosition: "PAGE {current} OF {total}",
+    dispatchActivitiesLabel: "House notices and activities",
+    dispatchResultsLabel: "Notices in the selected category",
+    previousDispatchItem: "Previous feature",
+    nextDispatchItem: "Next feature",
+    previousDispatchPage: "Previous posts",
+    nextDispatchPage: "More posts",
+    pauseDispatchRotation: "Pause automatic rotation",
+    resumeDispatchRotation: "Resume automatic rotation",
+    gatheringEyebrow: "THE EVENING IS RESERVED",
+    gatheringTitle: "An evening<br><em>at the house.</em>",
+    gatheringText: "Avatar workshops, art, film nights, and conversation at an unhurried pace. The evening will take its own course; the company is yours to choose.",
+    gatheringCta: "View the house calendar",
+    gatheringCardLabel: "THE FRONT-DESK LEDGER",
+    gatheringWhenLabel: "WHEN THE HOUSE STIRS",
     gatheringWhen: "PAST MIDNIGHT",
-    gatheringTimezone: "GMT−3 · WHENEVER THE NIGHT OWLS ARRIVE",
-    gatheringCardTitle: "No stiff schedule.<br><em>Just good company.</em>",
-    gatheringCardText: "Workshops, shared art, movie nights, and other good reasons to stay up. Find the latest plans on Discord.",
-    gatheringCardLink: "Check the noticeboard",
-    coinTitle: "The house currency",
-    coinText: "Our gold coins are a real thank-you for active members. They're a community perk, earned through participation—not cash, investments, or a promise of financial value.",
-    aboutEyebrow: "THE PEOPLE BEHIND THE LOBBY",
-    aboutTitle: "Odd hours.<br><em>Good people.</em>",
-    aboutIntro: "We're a small crew with different interests and the same open-door policy. Say hello about art, avatars, aviation, languages, or absolutely anything else.",
+    gatheringTimezone: "GMT−3 · WHEN THE NIGHT OWLS ARRIVE",
+    gatheringCardTitle: "No rigid itinerary.<br><em>Only good company.</em>",
+    gatheringCardText: "Avatar workshops, shared art, film nights, and other good reasons to stay. The latest arrangements are on Discord.",
+    gatheringCardLink: "Consult the ledger",
+    coinTitle: "Gold coins of the house",
+    coinText: "Gold coins thank active members for taking part; they have no cash value. A marker is a friendly promise. Any talk of being barred from the house is only a joke about keeping the rules.",
+    aboutEyebrow: "THE HOUSEHOLD & REGISTRY",
+    aboutTitle: "Late hours.<br><em>Good company.</em>",
+    aboutIntro: "A small household, many interests, and a door kept open. Speak with us of art, avatars, aviation, languages, or whatever takes your fancy.",
     prickettRole: "ART · CODE · 2D / 3D",
-    prickettBio: "Prickett studies Art and IT, and spends his time coding, drawing, and creating in 2D and 3D. He speaks English and Portuguese, is learning Chinese and other languages, and is autistic. Easy-going and happy to chat about just about anything.",
-    prickettLink: "Find Prickett online",
-    nekozuskaRole: "OWNER · VIP",
-    nekozuskaBio: "The owner of the house: easy-going, a little mysterious, VIP, and known for changing moods like the weather. Come say hello; you never know which chapter you'll find.",
-    nekozuskaSignoff: "THE HOUSE HAS ITS MYSTERIES.",
+    prickettBio: "Prickett is an undergraduate in Art and IT. He codes, draws, and creates in 2D and 3D; speaks English and Portuguese; and is learning Chinese and other languages. He is autistic, easy-going, and glad to talk about almost anything.",
+    prickettLink: "Visit Prickett's page",
+    nekozuskaRole: "THE MANAGER · VIP",
+    nekozuskaBio: "The proprietor: easy-going, mysterious, VIP, and known for changing moods like the weather. Offer a greeting; one never knows which chapter the Manager is in.",
+    nekozuskaSignoff: "SOME MATTERS REMAIN IN THE LEDGER.",
     succubiRole: "FLIGHT DECK · AGENT 007",
     succubiBio: "Self-appointed sad-boy Agent 007: zero failures, zero risk, and 7,000 hours in the flight simulator. The lonely-agent act is a joke; he has a girlfriend. Expect flight stories and a touch of secret-agent bravado.",
     succubiSignoff: "0 FAILURES · 0 RISK · 7K HOURS",
-    communityEyebrow: "YOUR PEOPLE ARE HERE",
-    communityTitle: "The doors are <em>open.</em>",
-    communityDescription: "Find the group on VRChat. Find the plans on Discord.<br>We'll save you a seat.",
-    vrchatButton: "Find us on VRChat",
-    discordButton: "Join the Discord",
-    communityNote: "PAST MIDNIGHT · GMT−3 · COME AS YOU ARE",
-    disclaimer: "AN UNOFFICIAL FAN COMMUNITY. NOT AFFILIATED WITH THE CONTINENTAL, LIONSGATE, OR JOHN WICK.",
-    backToLobby: "BACK TO THE LOBBY",
+    communityEyebrow: "YOUR ROOM IS READY",
+    communityTitle: "The house is <em>open.</em>",
+    communityDescription: "Check in with us on VRChat. Find the plans on Discord.<br>Your place is at the table.",
+    vrchatButton: "Check in on VRChat",
+    discordButton: "Request a Discord invitation",
+    communityNote: "AFTER MIDNIGHT · GMT−3 · COME AS YOU ARE",
+    disclaimer: "An unofficial fan community. Not affiliated with The Continental, Lionsgate, or John Wick.",
+    backToLobby: "RETURN TO THE LOBBY",
   },
   pt: {
     skip: "Pular para o conteúdo",
     home: "The Continental, início",
-    houseLabel: "ESPAÇO SOCIAL NO VR",
+    houseLabel: "ESPAÇO SOCIAL NO VRCHAT",
     navigation: "Navegação principal",
     navHome: "O saguão",
-    navDispatch: "Novidades",
-    navGatherings: "Encontros",
-    navAbout: "A equipe",
-    navJoin: "Encontre sua turma",
+    navDispatch: "Mural da casa",
+    navGatherings: "Noites & eventos",
+    navAbout: "O registro",
+    navJoin: "Peça um convite",
     exploreHouse: "Conheça a casa",
     switchLanguage: "Mudar idioma para inglês",
     openWatch: "Abrir o relógio de bolso",
     closeWatch: "Fechar o relógio de bolso",
     watchLabel: "Relógio de bolso",
     watchKicker: "O CRONÔMETRO DA CASA",
-    watchTitle: "Dois lados da meia-noite",
+    watchTitle: "A casa, hora a hora",
     watchLocal: "SEU HORÁRIO · LOCAL",
     watchHouse: "A CASA · GMT−3",
-    watchSky: "UM PEDAÇO DO CÉU PARA A MADRUGADA",
-    watchFooter: "A NOITE AINDA ESTÁ COMEÇANDO.",
-    rabbitCaption: "SIGA O COELHO BRANCO",
+    watchSky: "UM PEQUENO CÉU PARA O TURNO DA NOITE",
+    watchFooter: "AINDA HÁ TEMPO.",
+    rabbitCaption: "UM GUIA DISCRETO PELA CASA",
     playMusic: "Tocar música de fundo",
     pauseMusic: "Pausar música de fundo",
     musicOff: "Tocar música da casa",
@@ -203,138 +186,108 @@ const translations = {
     volumeLabel: "MÚSICA DA CASA · VOLUME",
     openMenu: "Abrir navegação",
     closeMenu: "Fechar navegação",
-    noticeEyebrow: "ÚLTIMAS DO MURAL",
-    noticeTitle: "Recados<br><em>da madrugada.</em>",
-    noticeDescription: "Os avisos, planos e novidades da casa ficam no mural.",
-    noticeCta: "Ler os recados",
-    noticeQuiet: "Por enquanto, o mural está quietinho. Dê uma olhada depois do próximo encontro.",
-    noticeFailed: "O mural está demorando um pouquinho. As novidades também estão no Discord.",
+    noticeEyebrow: "RECADOS DA RECEPÇÃO",
+    noticeTitle: "Uma palavra<br><em>da casa.</em>",
+    noticeDescription: "Avisos, planos e pequenos acontecimentos, registrados no livro da casa.",
+    noticeCta: "Ler os avisos da casa",
+    noticeQuiet: "O livro está quieto por enquanto. Volte depois do próximo encontro.",
+    noticeFailed: "O livro está indisponível agora. Os avisos mais recentes seguem no Discord.",
     noticePostedBy: "PUBLICADO POR",
     noticeDiscord: "ABRIR O MURAL NO DISCORD",
     noticeUpdated: "ÚLTIMA CONSULTA",
-    routeDispatchMeta: "NOVIDADES DA CASA",
-    routeDispatchTitle: "O que estamos<br>criando.",
+    routeDispatchMeta: "LIVRO DA RECEPÇÃO",
+    routeDispatchTitle: "Uma palavra<br>da casa.",
     routeGatheringMeta: "A AGENDA DA CASA",
-    routeGatheringTitle: "Pra onde vai<br>a noite.",
-    routePeopleMeta: "QUEM É DA CASA",
-    routePeopleTitle: "Gente boa<br>pra conhecer.",
-    routeOpen: "ABRIR ESTE ARQUIVO ↗",
-    pageDispatchTitle: "Novidades & criações",
-    pageDispatchDeck: "Um pouco do que estamos criando, aprendendo, assistindo e compartilhando.",
-    pageGatheringTitle: "O mural da madrugada",
-    pageGatheringDeck: "Planos, horários locais e as notícias mais recentes da casa.",
-    pagePeopleTitle: "A equipe por trás do saguão",
-    pagePeopleDeck: "Interesses diferentes, portas abertas. Essa é a turma que mantém as luzes acesas.",
-    liveNoticeEyebrow: "RECADOS MAIS RECENTES",
-    liveNoticeTitle: "Direto do<br><em>mural da casa.</em>",
-    noticeSource: "O mural reúne os recados recentes da comunidade. Entre no Discord para participar da conversa.",
+    routeGatheringTitle: "Uma noite<br>bem passada.",
+    routePeopleMeta: "REGISTRO DE HÓSPEDES",
+    routePeopleTitle: "Conheça a<br>casa.",
+    routeOpen: "VER O REGISTRO ↗",
+    pageDispatchTitle: "Mural da casa",
+    pageDispatchDeck: "Avisos da recepção: o que a casa está criando, aprendendo e assistindo.",
+    pageGatheringTitle: "Noites na casa",
+    pageGatheringDeck: "Encontros, horário local e os avisos mais recentes da recepção.",
+    pagePeopleTitle: "Registro da casa",
+    pagePeopleDeck: "Conheça quem vive e cuida deste pequeno espaço social no VRChat.",
+    liveNoticeEyebrow: "LIVRO DA RECEPÇÃO",
+    liveNoticeTitle: "Registrado no<br><em>livro da casa.</em>",
+    noticeSource: "Avisos públicos recentes da casa. Entre no Discord para participar da conversa.",
     noticeLoading: "Consultando o mural…",
-    dispatchScheduleLabel: "SEM HORÁRIO FIXO",
-    dispatchScheduleTitle: "A noite tem<br><em>seu próprio ritmo.</em>",
-    dispatchScheduleText: "A gente costuma se encontrar depois da meia-noite, no fuso GMT−3. Pode rolar customização de avatar, arte, filme ou simplesmente uma boa conversa quando a turma da madrugada chega.",
-    peopleIntroTitle: "Uma turma pequena.<br><em>Casa aberta.</em>",
+    dispatchScheduleLabel: "PELO RELÓGIO DA CASA",
+    dispatchScheduleTitle: "A noite é sua<br><em>para aproveitar.</em>",
+    dispatchScheduleText: "A gente se encontra depois da meia-noite, no fuso GMT−3: oficinas de avatar, arte, filme ou uma conversa sem pressa.",
+    peopleIntroTitle: "Uma pequena casa.<br><em>Boas-vindas de verdade.</em>",
     currencyTitle: "OURO · MOEDA DA COMUNIDADE",
-    communityRule: "Gentileza, respeito às pessoas e aos espaços, e sempre mais uma cadeira à mesa.",
-    discordLatest: "Para ver as últimas novidades, acesse o mural no Discord.",
-    heroEyebrow: "AS PORTAS ESTÃO ABERTAS",
-    heroSubEyebrow: "DESDE QUE O VR EXISTE",
-    heroTitle: "Quando a noite<br>fica <em>boa.</em>",
-    heroDescription: "Uma casa no VRChat para quem gosta de criar e descobrir coisas novas. Aprenda a personalizar seu avatar, mostre o que está fazendo, assista a um filme ou fique mais um pouco para conversar.",
-    heroCta: "Chega mais",
-    heroBrowse: "Veja o que está rolando",
-    dressCode: "UM TOQUE DE ELEGÂNCIA. SEJA VOCÊ.",
-    heroArtAlt: "Ilustração original da entrada de um hotel iluminado em dourado à noite",
+    communityRule: "Sem drama nem assédio. Gentileza e respeito com todas as pessoas e espaços; sempre cabe mais alguém à mesa.",
+    discordLatest: "Para o aviso mais recente, consulte a recepção no Discord.",
+    heroEyebrow: "A CASA ESTÁ ABERTA",
+    heroSubEyebrow: "UM ESPAÇO SOCIAL NO VRCHAT",
+    heroTitle: "Seu quarto<br>para a <em>noite.</em>",
+    heroDescription: "Uma casa no VRChat para quem gosta de criar e descobrir coisas. Aprenda a personalizar um avatar, compartilhe um projeto, assista a um filme ou fique para mais uma conversa. Sem drama ou assédio: toda pessoa merece se sentir segura e bem-vinda.",
+    heroCta: "Faça seu check-in",
+    heroBrowse: "Consulte o mural da casa",
+    dressCode: "UM TOQUE DE ELEGÂNCIA, SE QUISER. SEMPRE SEJA VOCÊ.",
+    heroArtAlt: "Ilustração original da entrada da casa iluminada à noite",
     signTop: "UMA CASA ENTRE MUNDOS",
-    signBottom: "SEMPRE CABE MAIS UM",
-    artCaptionCompany: "✳ BOA COMPANHIA",
-    artCaption: "DEPOIS DA MEIA-NOITE · GMT−3",
-    artSideLabel: "SEU MUNDO, DO SEU JEITO",
-    scrollExplore: "EXPLORE A CASA",
-    tickerLabel: "Lema da comunidade",
-    tickerOne: "ELEGÂNCIA NO TRAJE · GENTILEZA SEMPRE",
-    tickerTwo: "DEPOIS DA MEIA-NOITE · GMT−3",
+    signBottom: "A PORTA ESTÁ ABERTA",
+    artCaptionCompany: "✳ BOA COMPANHIA, MUITO BEM-VINDA",
+    artCaption: "TURNO DA NOITE · GMT−3",
+    artSideLabel: "SEU QUARTO, DO SEU JEITO",
+    scrollExplore: "SIGA PELA CASA",
+    tickerLabel: "Boas-vindas da casa",
+    tickerOne: "BOA EDUCAÇÃO · BOA COMPANHIA",
+    tickerTwo: "TURNO DA NOITE · GMT−3",
     tickerThree: "CRIAR É MELHOR EM BOA COMPANHIA",
-    tickerFour: "SEMPRE CABE MAIS UM",
-    dispatchEyebrow: "DIRETO DO SAGUÃO",
-    dispatchTitle: "As <em>novidades.</em>",
+    tickerFour: "SEMPRE CABE MAIS UMA PESSOA",
+    dispatchEyebrow: "UM RECADO DA RECEPÇÃO",
+    dispatchTitle: "O mural<br><em>da casa.</em>",
     moreFromHouse: "Venha trocar ideia",
-    dispatchIntro: "Oficinas, arte, filmes e tudo mais que a noite trouxer.",
-    filterLabel: "Filtrar novidades",
-    filterAll: "Tudo",
-    filterWorkshop: "Oficinas",
-    filterArt: "Arte",
-    filterMovies: "Filmes",
-    filterNotes: "Recados da casa",
-    pauseFilterRotation: "Pausar a rotação das categorias",
-    resumeFilterRotation: "Retomar a rotação das categorias",
-    catWorkshop: "OFICINA NA PRÁTICA",
-    metaWorkshop: "PERSONALIZAÇÃO DE AVATARES",
-    postWorkshopTitle: "Deixe seu avatar<br><em>com a sua cara.</em>",
-    postWorkshopText: "Oficinas descontraídas para aprender a personalizar avatares de VRChat. Traga seu projeto, tire dúvidas e aprenda no seu ritmo.",
-    postWorkshopLink: "Aprender em grupo",
-    catArt: "SALA DE ARTE",
-    metaArt: "ARTE E MOSTRA DE TRABALHOS",
-    artImageText: "CRIAR<br>JUNTOS<br>É MELHOR",
-    postArtTitle: "Feito à mão.<br><em>Compartilhado com amigos.</em>",
-    postArtText: "Desenho, arte digital, 2D, 3D e projetos em andamento. Mostre o que está criando, desenhe com a gente ou só aproveite a companhia do ateliê.",
-    postArtLink: "Traga sua criatividade",
-    catMovie: "SESSÃO DEPOIS DA HORA",
-    metaMovie: "NOITE DE FILME",
-    movieImageText: "LUZES<br>BAIXAS<br>FILME<br>ROLANDO",
-    movieImageTag: "NOITE DE FILME",
-    postMovieTitle: "Mais um filme.<br><em>Mais uma boa história.</em>",
-    postMovieText: "Puxe uma poltrona para assistir a um filme com a gente — e fique para o papo depois. No Discord você vê o que vai passar e como participar.",
-    postMovieLink: "Veja a próxima sessão",
-    catCreator: "ESQUINA DA CRIAÇÃO",
-    creatorImageText: "FAÇA<br>DO SEU JEITO",
-    metaCreator: "APRENDER E EXPERIMENTAR",
-    postCreatorTitle: "Quer saber<br><em>como se faz?</em>",
-    postCreatorText: "Troque dicas criativas, experimente uma ferramenta nova ou faça aquela pergunta que estava guardando. Iniciantes e veteranos são bem-vindos.",
-    postCreatorLink: "Pergunte à comunidade",
-    catHouse: "UM RECADO DA CASA",
-    metaDress: "O CÓDIGO DE VESTIMENTA",
-    houseImageText: "BEM<br>VESTIDO<br>SEJA GENTE BOA",
-    postDressTitle: "Um pouco de <em>elegância.</em><br>Sem deixar de ser você.",
-    postDressText: "A casa tem um clima elegante, então capriche no visual se estiver a fim. Venha do seu jeito, respeite todo mundo e fique à vontade.",
-    postDressLink: "Conheça a equipe",
-    catLate: "SAGUÃO DA MADRUGADA",
-    metaLate: "PELA CASA",
-    postLateTitle: "A noite vai<br><em>mais longe.</em>",
-    postLateText: "A maioria dos encontros acontece depois da meia-noite, no fuso GMT−3. Sem horário rígido: o saguão ganha vida quando chegam os notívagos.",
-    postLateLink: "Encontre a gente de madrugada",
-    gatheringEyebrow: "A NOITE É SUA",
-    gatheringTitle: "Vamos fazer<br><em>da noite um evento.</em>",
-    gatheringText: "Oficinas de avatar, encontros de arte, noites de filme e espaço para um bom papo sem pressa. A gente se reúne, cria junto e vê aonde a noite vai dar.",
-    gatheringCta: "Veja o que está rolando",
-    gatheringCardLabel: "O MURAL DA MADRUGADA",
-    gatheringWhenLabel: "QUANDO O SAGUÃO GANHA VIDA",
+    dispatchIntro: "Oficinas, arte, filmes e outros bons motivos para ficar mais um pouco.",
+    filterLabel: "Filtrar avisos da casa",
+    dispatchFeatureLabel: "UM AVISO DA CASA",
+    dispatchNoItems: "Ainda não há registros nesta categoria.",
+    dispatchFeedError: "Não foi possível carregar o mural da casa. Tente novamente mais tarde.",
+    dispatchPosition: "DESTAQUE {current} DE {total}",
+    dispatchPagePosition: "PÁGINA {current} DE {total}",
+    dispatchActivitiesLabel: "Avisos e atividades da casa",
+    dispatchResultsLabel: "Avisos da categoria selecionada",
+    previousDispatchItem: "Destaque anterior",
+    nextDispatchItem: "Próximo destaque",
+    previousDispatchPage: "Publicações anteriores",
+    nextDispatchPage: "Mais publicações",
+    pauseDispatchRotation: "Pausar a rotação automática",
+    resumeDispatchRotation: "Retomar a rotação automática",
+    gatheringEyebrow: "A NOITE ESTÁ RESERVADA",
+    gatheringTitle: "Uma noite<br><em>na casa.</em>",
+    gatheringText: "Oficinas de avatar, arte, filmes e conversa sem pressa. A noite segue seu próprio caminho; a companhia é por sua conta.",
+    gatheringCta: "Ver a agenda da casa",
+    gatheringCardLabel: "LIVRO DA RECEPÇÃO",
+    gatheringWhenLabel: "QUANDO A CASA DESPERTA",
     gatheringWhen: "DEPOIS DA MEIA-NOITE",
     gatheringTimezone: "GMT−3 · QUANDO A TURMA DA MADRUGADA CHEGAR",
-    gatheringCardTitle: "Sem agenda engessada.<br><em>Só gente boa.</em>",
-    gatheringCardText: "Oficinas, arte compartilhada, filmes e bons motivos para ficar acordado. Os planos mais recentes estão no Discord.",
-    gatheringCardLink: "Confira o mural",
-    coinTitle: "A moeda da casa",
-    coinText: "As moedas de ouro são um agradecimento de verdade aos membros ativos. São um benefício da comunidade, conquistado com participação — não são dinheiro, investimento nem promessa de valor financeiro.",
-    aboutEyebrow: "A EQUIPE POR TRÁS DO SAGUÃO",
-    aboutTitle: "Madrugada longa.<br><em>Boa companhia.</em>",
-    aboutIntro: "Somos uma turma pequena, com interesses diferentes e a porta sempre aberta. Pode puxar papo sobre arte, avatares, aviação, idiomas ou qualquer assunto que vier à cabeça.",
+    gatheringCardTitle: "Sem roteiro rígido.<br><em>Só boa companhia.</em>",
+    gatheringCardText: "Oficinas de avatar, arte compartilhada, filmes e outros bons motivos para ficar. Os planos mais recentes estão no Discord.",
+    gatheringCardLink: "Consulte o livro",
+    coinTitle: "Moedas de ouro da casa",
+    coinText: "As moedas de ouro agradecem a participação dos membros ativos; não têm valor em dinheiro. Um marcador é uma promessa entre amigos. Falar em ser barrado da casa é só uma brincadeira sobre seguir as regras.",
+    aboutEyebrow: "A CASA E SEU REGISTRO",
+    aboutTitle: "Madrugada adentro.<br><em>Boa companhia.</em>",
+    aboutIntro: "Uma casa pequena, muitos interesses e a porta sempre aberta. Pode puxar papo sobre arte, avatares, aviação, idiomas ou qualquer assunto que der vontade.",
     prickettRole: "ARTE · CÓDIGO · 2D / 3D",
     prickettBio: "Prickett faz graduação em Artes e TI. Programa, desenha e cria em 2D e 3D; fala português e inglês e está aprendendo chinês e outros idiomas. É autista, tranquilo e adora conversar sobre praticamente qualquer assunto.",
-    prickettLink: "Encontre Prickett online",
-    nekuzuskaRole: "PROPRIETÁRIO · VIP",
-    nekozuskaRole: "PROPRIETÁRIO · VIP",
-    nekozuskaBio: "Dono da casa: tranquilo, um pouco misterioso, VIP e conhecido por mudar de humor como o tempo. Chegue para dar um oi; nunca se sabe qual capítulo vem a seguir.",
-    nekozuskaSignoff: "A CASA TEM SEUS MISTÉRIOS.",
+    prickettLink: "Visite a página do Prickett",
+    nekozuskaRole: "GERENTE · VIP",
+    nekozuskaBio: "O proprietário: tranquilo, misterioso, VIP e conhecido por mudar de humor como o tempo. Dê um oi; nunca se sabe em que capítulo o gerente está.",
+    nekozuskaSignoff: "ALGUNS ASSUNTOS FICAM NO LIVRO.",
     succubiRole: "CONVÉS DE VOO · AGENTE 007",
     succubiBio: "Agente 007 sad boy por conta própria: zero falhas, zero riscos e 7 mil horas no simulador de voo. O papo de agente solitário é brincadeira — ele tem namorada, sim. Histórias de aviação e pose de agente secreto vêm junto.",
     succubiSignoff: "0 FALHAS · 0 RISCO · 7 MIL HORAS",
-    communityEyebrow: "SUA GALERA ESTÁ AQUI",
-    communityTitle: "As portas estão <em>abertas.</em>",
-    communityDescription: "Encontre o grupo no VRChat. Veja os planos no Discord.<br>Tem lugar para você na mesa.",
-    vrchatButton: "Encontre a gente no VRChat",
-    discordButton: "Entrar no Discord",
+    communityEyebrow: "SEU QUARTO ESTÁ PRONTO",
+    communityTitle: "A casa está <em>aberta.</em>",
+    communityDescription: "Faça seu check-in no VRChat. Confira os planos no Discord.<br>Seu lugar está à mesa.",
+    vrchatButton: "Faça check-in no VRChat",
+    discordButton: "Peça um convite pelo Discord",
     communityNote: "DEPOIS DA MEIA-NOITE · GMT−3 · SEJA VOCÊ",
-    disclaimer: "COMUNIDADE DE FÃS NÃO OFICIAL. SEM VÍNCULO COM THE CONTINENTAL, LIONSGATE OU JOHN WICK.",
+    disclaimer: "Comunidade de fãs não oficial. Sem vínculo com The Continental, Lionsgate ou John Wick.",
     backToLobby: "VOLTAR AO SAGUÃO",
   },
 };
@@ -370,16 +323,30 @@ let noticesRefreshInterval = null;
 let scrollObserver = null;
 const pageTitles = {
   en: {
-    home: "The Continental — After-hours Social House",
-    dispatch: "Dispatch — The Continental",
-    gatherings: "Gatherings — The Continental",
-    people: "The People — The Continental",
+    home: "The Continental — VRChat Social House",
+    dispatch: "House Bulletin — The Continental",
+    gatherings: "Evenings at the House — The Continental",
+    people: "The House Registry — The Continental",
   },
   pt: {
-    home: "The Continental — Espaço Social de Madrugada",
-    dispatch: "Novidades — The Continental",
-    gatherings: "Encontros — The Continental",
-    people: "A Galera — The Continental",
+    home: "The Continental — Casa social no VRChat",
+    dispatch: "Mural da casa — The Continental",
+    gatherings: "Noites na casa — The Continental",
+    people: "Registro da casa — The Continental",
+  },
+};
+const pageDescriptions = {
+  en: {
+    home: "A welcoming VRChat social house for avatar workshops, art, film nights, and good company.",
+    dispatch: "House notices from the front desk: workshops, art, film nights, and community news.",
+    gatherings: "Gatherings, local hours, and public notices from The Continental VRChat social house.",
+    people: "Meet the residents and keepers of The Continental, a welcoming VRChat social house.",
+  },
+  pt: {
+    home: "Uma casa social acolhedora no VRChat, com oficinas de avatares, arte, filmes e boa companhia.",
+    dispatch: "Avisos da recepção: oficinas, arte, noites de filme e notícias da comunidade.",
+    gatherings: "Encontros, horário local e avisos públicos da casa social The Continental no VRChat.",
+    people: "Conheça quem vive e cuida da The Continental, uma casa social acolhedora no VRChat.",
   },
 };
 
@@ -397,9 +364,7 @@ function setLanguage(language) {
       ? "gatherings"
       : document.body.classList.contains("people-page") ? "people" : "home";
   document.title = pageTitles[language][page];
-  pageDescription.content = language === "pt"
-    ? "Um ponto de encontro no VRChat para oficinas de avatares, arte, noites de filme e boa companhia."
-    : "An after-hours VRChat social house for avatar workshops, art, movie nights, and good company.";
+  pageDescription.content = pageDescriptions[language][page];
 
   for (const element of document.querySelectorAll("[data-i18n]")) {
     const translation = dictionary[element.dataset.i18n];
@@ -447,85 +412,410 @@ function setLanguage(language) {
   updateMenuLabel();
   updateWatchLabel();
   updateVolumeLabel();
-  updateDispatchFilterRotationControl();
+  updateDispatchRotationControl();
+  if (cachedDispatchFeed && dispatchPageIsActive()) {
+    const activities = document.querySelector(".dispatch");
+    activities?.setAttribute("aria-label", translations[currentLanguage].dispatchActivitiesLabel);
+    renderDispatchFilters();
+    renderDispatchFeature(dispatchFeatureIndex);
+    renderDispatchResults();
+  }
   if (cachedNotices !== null) renderNotices(cachedNotices);
 }
 
-function setDispatchFilter(filter) {
-  const buttons = document.querySelectorAll(".filter-button");
-  const cards = document.querySelectorAll(".dispatch-card");
-  if (!buttons.length || !cards.length || ![...buttons].some((button) => button.dataset.filter === filter)) return;
+function dispatchPageIsActive() {
+  return Boolean(document.querySelector(".dispatch-page") && document.querySelector("#dispatch-feature"));
+}
 
-  for (const button of buttons) {
-    const isActive = button.dataset.filter === filter;
-    button.classList.toggle("is-active", isActive);
-    button.setAttribute("aria-pressed", String(isActive));
+function validateDispatchFeed(feed) {
+  if (
+    !feed
+    || !Array.isArray(feed.categories)
+    || !Array.isArray(feed.items)
+    || feed.categories.length > 20
+    || feed.items.length > 300
+  ) {
+    throw new TypeError("The dispatch feed has an invalid shape or exceeds its size limits.");
   }
-  for (const card of cards) {
-    card.hidden = filter !== "all" && card.dataset.category !== filter;
+
+  const categoryIds = new Set();
+  const hasLocalizedText = (value, limit) => value && ["en", "pt"].every((language) => (
+    typeof value[language] === "string" && value[language].trim() && value[language].length <= limit
+  ));
+  for (const category of feed.categories) {
+    if (
+      !category
+      || typeof category.id !== "string"
+      || !/^[a-z0-9-]{1,40}$/.test(category.id)
+      || category.id === "all"
+      || categoryIds.has(category.id)
+      || !hasLocalizedText(category.label, 80)
+    ) {
+      throw new TypeError("The dispatch feed contains an invalid or duplicate category.");
+    }
+    categoryIds.add(category.id);
+  }
+
+  const itemIds = new Set();
+  for (const item of feed.items) {
+    const href = typeof item?.href === "string" ? new URL(item.href, window.location.href) : null;
+    const siteDirectory = new URL(".", window.location.href).pathname;
+    const localPage = href && href.origin === window.location.origin
+      && href.pathname.startsWith(siteDirectory)
+      && ["index.html", "dispatch.html", "gatherings.html", "people.html"].includes(href.pathname.split("/").pop());
+    const discordLink = href && href.protocol === "https:" && href.hostname === "discord.gg"
+      && !href.username && !href.password && !href.port;
+    const validImage = item?.image === undefined || (
+      typeof item.image?.src === "string"
+      && /^assets\/dispatch\/[a-z0-9._-]+\.(?:avif|gif|jpe?g|png|webp)$/i.test(item.image.src)
+      && hasLocalizedText(item.image.alt, 300)
+    );
+    if (
+      !item
+      || typeof item.id !== "string"
+      || !/^[a-z0-9-]{1,60}$/.test(item.id)
+      || itemIds.has(item.id)
+      || !categoryIds.has(item.category)
+      || typeof item.icon !== "string"
+      || item.icon.length > 8
+      || !hasLocalizedText(item.meta, 100)
+      || !hasLocalizedText(item.body, 3000)
+      || !hasLocalizedText(item.linkLabel, 120)
+      || !["en", "pt"].every((language) => (
+        typeof item.title?.[language]?.lead === "string"
+        && item.title[language].lead.length <= 200
+        && typeof item.title[language]?.accent === "string"
+        && item.title[language].accent.length <= 200
+      ))
+      || !href
+      || (!localPage && !discordLink)
+      || !validImage
+    ) {
+      throw new TypeError("The dispatch feed contains an invalid or unsafe post.");
+    }
+    itemIds.add(item.id);
+  }
+
+  return feed;
+}
+
+async function loadDispatchFeed() {
+  if (!cachedDispatchFeed) {
+    if (!dispatchFeedRequest) {
+      dispatchFeedRequest = fetch(DEFAULT_DISPATCH_FEED, {
+        cache: "no-cache",
+        headers: { Accept: "application/json" },
+      }).then((response) => {
+        if (!response.ok) throw new Error(`Dispatch feed returned HTTP ${response.status}.`);
+        return response.json();
+      }).then(validateDispatchFeed).finally(() => {
+        dispatchFeedRequest = null;
+      });
+    }
+    cachedDispatchFeed = await dispatchFeedRequest;
+  }
+
+  if (dispatchPageIsActive()) {
+    document.querySelector(".dispatch")?.setAttribute("aria-label", translations[currentLanguage].dispatchActivitiesLabel);
+    document.querySelector("#dispatch-results")?.setAttribute("aria-label", translations[currentLanguage].dispatchResultsLabel);
+    const status = document.querySelector("#dispatch-feed-status");
+    if (status) status.hidden = true;
+    renderDispatchFilters();
+    renderDispatchFeature(dispatchFeatureIndex);
+    renderDispatchResults();
+    startDispatchRotation();
+    if (!cachedDispatchFeed.items.length) {
+      const status = document.querySelector("#dispatch-feed-status");
+      if (status) {
+        status.textContent = translations[currentLanguage].dispatchNoItems;
+        status.hidden = false;
+      }
+    }
   }
 }
 
-let dispatchFilterInterval = null;
-let dispatchFilterRotationPaused = false;
-const DISPATCH_FILTER_ROTATION_MS = 10000;
+function dispatchText(value) {
+  return value[currentLanguage];
+}
 
-function updateDispatchFilterRotationControl() {
-  const button = document.querySelector(".filter-rotation-toggle");
+function safeDispatchHref(href) {
+  const destination = new URL(href, window.location.href);
+  return destination.href;
+}
+
+function createDispatchCard(item, featured = false) {
+  const category = cachedDispatchFeed.categories.find((entry) => entry.id === item.category);
+  const card = document.createElement("article");
+  card.className = `dispatch-card${featured ? " dispatch-feature-card" : ""}`;
+  card.dataset.category = item.category;
+  card.dataset.itemId = item.id;
+
+  const visual = document.createElement("div");
+  visual.className = featured ? "dispatch-feature-visual" : "dispatch-icon";
+  if (!item.image) visual.setAttribute("aria-hidden", "true");
+  if (item.image) {
+    const image = document.createElement("img");
+    image.src = item.image.src;
+    image.alt = dispatchText(item.image.alt);
+    image.loading = featured ? "eager" : "lazy";
+    image.decoding = "async";
+    image.addEventListener("error", () => image.remove(), { once: true });
+    visual.append(image);
+  } else {
+    const icon = document.createElement("span");
+    icon.className = featured ? "dispatch-feature-icon" : "";
+    icon.textContent = item.icon;
+    visual.append(icon);
+  }
+  if (featured) {
+    const stamp = document.createElement("span");
+    stamp.className = "dispatch-feature-stamp";
+    stamp.textContent = dispatchText(category.label);
+    visual.append(stamp);
+  }
+
+  const body = document.createElement("div");
+  body.className = "card-body";
+  const meta = document.createElement("div");
+  meta.className = "card-meta";
+  const categoryLabel = document.createElement("span");
+  categoryLabel.textContent = dispatchText(item.meta);
+  const postNumber = document.createElement("span");
+  postNumber.textContent = `${String(cachedDispatchFeed.items.indexOf(item) + 1).padStart(2, "0")} / ${String(cachedDispatchFeed.items.length).padStart(2, "0")}`;
+  meta.append(categoryLabel, postNumber);
+
+  const title = document.createElement("h2");
+  const localizedTitle = item.title[currentLanguage];
+  title.append(document.createTextNode(localizedTitle.lead));
+  if (localizedTitle.accent) {
+    title.append(document.createTextNode(" "));
+    const accent = document.createElement("em");
+    accent.textContent = localizedTitle.accent;
+    title.append(accent);
+  }
+
+  const description = document.createElement("p");
+  description.textContent = dispatchText(item.body);
+  const link = document.createElement("a");
+  link.className = "card-link";
+  link.href = safeDispatchHref(item.href);
+  const linkLabel = document.createElement("span");
+  linkLabel.textContent = dispatchText(item.linkLabel);
+  const linkArrow = document.createElement("span");
+  linkArrow.setAttribute("aria-hidden", "true");
+  linkArrow.textContent = "↗";
+  link.append(linkLabel, linkArrow);
+  if (new URL(link.href).origin !== window.location.origin) {
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+  }
+
+  body.append(meta, title, description, link);
+  card.append(visual, body);
+  return card;
+}
+
+function renderDispatchFilters() {
+  const filters = document.querySelector("#dispatch-filters");
+  if (!filters || !cachedDispatchFeed) return;
+  const buttons = [];
+  const allButton = document.createElement("button");
+  allButton.className = "filter-button";
+  allButton.type = "button";
+  allButton.dataset.filter = "all";
+  allButton.setAttribute("aria-pressed", "false");
+  allButton.textContent = currentLanguage === "pt" ? "Tudo" : "Everything";
+  buttons.push(allButton);
+
+  for (const category of cachedDispatchFeed.categories) {
+    const button = document.createElement("button");
+    button.className = "filter-button";
+    button.type = "button";
+    button.dataset.filter = category.id;
+    button.setAttribute("aria-pressed", "false");
+    button.textContent = dispatchText(category.label);
+    buttons.push(button);
+  }
+
+  filters.replaceChildren(...buttons);
+  updateDispatchFilterButtons();
+  filters.setAttribute("aria-label", translations[currentLanguage].filterLabel);
+}
+
+function updateDispatchFilterButtons() {
+  for (const button of document.querySelectorAll(".filter-button")) {
+    const active = button.dataset.filter === selectedDispatchCategory;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  }
+}
+
+function formatDispatchPosition(key, current, total) {
+  return translations[currentLanguage][key]
+    .replace("{current}", String(current).padStart(2, "0"))
+    .replace("{total}", String(total).padStart(2, "0"));
+}
+
+function renderDispatchFeature(index, direction = 1) {
+  const feature = document.querySelector("#dispatch-feature");
+  if (!feature || !cachedDispatchFeed?.items.length) return;
+  dispatchFeatureIndex = (index + cachedDispatchFeed.items.length) % cachedDispatchFeed.items.length;
+  const item = cachedDispatchFeed.items[dispatchFeatureIndex];
+  const card = createDispatchCard(item, true);
+  card.classList.add("is-entering");
+  card.style.setProperty("--dispatch-entry-offset", direction < 0 ? "-24px" : "24px");
+  feature.replaceChildren(card);
+  window.requestAnimationFrame(() => card.classList.remove("is-entering"));
+
+  const position = document.querySelector("#dispatch-feature-position");
+  if (position) {
+    position.textContent = formatDispatchPosition("dispatchPosition", dispatchFeatureIndex + 1, cachedDispatchFeed.items.length);
+  }
+}
+
+function visibleDispatchItems() {
+  if (!cachedDispatchFeed) return [];
+  return selectedDispatchCategory === "all"
+    ? []
+    : cachedDispatchFeed.items.filter((item) => item.category === selectedDispatchCategory);
+}
+
+function renderDispatchResults(direction = 1) {
+  const results = document.querySelector("#dispatch-results");
+  const grid = document.querySelector("#dispatch-grid");
+  const label = document.querySelector("#dispatch-results-label");
+  const controls = document.querySelector("#dispatch-page-controls");
+  if (!results || !grid || !cachedDispatchFeed) return;
+
+  const filteredItems = visibleDispatchItems();
+  if (selectedDispatchCategory === "all") {
+    results.hidden = true;
+    grid.replaceChildren();
+    return;
+  }
+
+  results.hidden = false;
+  const category = cachedDispatchFeed.categories.find((entry) => entry.id === selectedDispatchCategory);
+  if (label) label.textContent = dispatchText(category.label);
+  if (!filteredItems.length) {
+    const empty = document.createElement("p");
+    empty.className = "dispatch-feed-status";
+    empty.textContent = translations[currentLanguage].dispatchNoItems;
+    grid.replaceChildren(empty);
+    controls.hidden = true;
+    return;
+  }
+
+  const pageCount = Math.ceil(filteredItems.length / DISPATCH_PAGE_SIZE);
+  dispatchPageIndex = ((dispatchPageIndex % pageCount) + pageCount) % pageCount;
+  const pageItems = filteredItems.slice(
+    dispatchPageIndex * DISPATCH_PAGE_SIZE,
+    (dispatchPageIndex + 1) * DISPATCH_PAGE_SIZE,
+  );
+  const cards = pageItems.map((item) => createDispatchCard(item));
+  for (const card of cards) {
+    card.classList.add("is-entering");
+    card.style.setProperty("--dispatch-entry-offset", direction < 0 ? "-20px" : "20px");
+  }
+  grid.replaceChildren(...cards);
+  window.requestAnimationFrame(() => {
+    for (const card of cards) card.classList.remove("is-entering");
+  });
+
+  controls.hidden = pageCount <= 1;
+  const position = document.querySelector("#dispatch-page-position");
+  if (position) position.textContent = formatDispatchPosition("dispatchPagePosition", dispatchPageIndex + 1, pageCount);
+}
+
+function setDispatchFilter(categoryId) {
+  if (
+    !cachedDispatchFeed
+    || (categoryId !== "all" && !cachedDispatchFeed.categories.some((category) => category.id === categoryId))
+  ) return;
+  selectedDispatchCategory = categoryId;
+  dispatchPageIndex = 0;
+  updateDispatchFilterButtons();
+  renderDispatchResults();
+  if (categoryId !== "all") {
+    const match = cachedDispatchFeed.items.findIndex((item) => item.category === categoryId);
+    if (match >= 0) renderDispatchFeature(match);
+  }
+  startDispatchRotation();
+}
+
+function updateDispatchRotationControl() {
+  const button = document.querySelector('[data-dispatch-action="toggle-rotation"]');
   if (!button) return;
-
-  const isPaused = dispatchFilterRotationPaused;
-  const label = translations[currentLanguage][isPaused ? "resumeFilterRotation" : "pauseFilterRotation"];
-  button.setAttribute("aria-pressed", String(isPaused));
+  const label = translations[currentLanguage][dispatchRotationPaused ? "resumeDispatchRotation" : "pauseDispatchRotation"];
+  button.setAttribute("aria-pressed", String(dispatchRotationPaused));
   button.setAttribute("aria-label", label);
   button.title = label;
-  button.querySelector(".filter-rotation-icon").textContent = isPaused ? "▶" : "Ⅱ";
+  button.querySelector(".dispatch-rotation-icon").textContent = dispatchRotationPaused ? "▶" : "Ⅱ";
 }
 
-function startDispatchFilterRotation() {
-  if (dispatchFilterInterval !== null) {
-    window.clearInterval(dispatchFilterInterval);
-    dispatchFilterInterval = null;
-  }
+function startDispatchRotation() {
+  window.clearInterval(dispatchFeatureInterval);
+  window.clearInterval(dispatchPageInterval);
+  dispatchFeatureInterval = null;
+  dispatchPageInterval = null;
+  if (!dispatchPageIsActive() || dispatchRotationPaused || !cachedDispatchFeed?.items.length) return;
 
-  const buttons = [...document.querySelectorAll(".filter-button")];
-  if (dispatchFilterRotationPaused || !buttons.length || !document.querySelector(".dispatch-card")) return;
+  dispatchFeatureInterval = window.setInterval(() => {
+    if (document.hidden || dispatchRotationHasActiveInteraction()) return;
+    renderDispatchFeature(dispatchFeatureIndex + 1);
+  }, DISPATCH_FEATURE_INTERVAL_MS);
 
-  const filters = buttons
-    .map((button) => button.dataset.filter)
-    .filter((filter) => filter && filter !== "all");
-  if (filters.length < 2) return;
-
-  dispatchFilterInterval = window.setInterval(() => {
-    const dispatchSection = document.querySelector(".dispatch");
+  dispatchPageInterval = window.setInterval(() => {
+    const pageCount = Math.ceil(visibleDispatchItems().length / DISPATCH_PAGE_SIZE);
     if (
-      document.hidden
-      || !dispatchSection
-      || dispatchSection.matches(":hover")
-      || dispatchSection.querySelector(":focus")
+      selectedDispatchCategory === "all"
+      || pageCount < 2
+      || document.hidden
+      || dispatchRotationHasActiveInteraction()
     ) return;
-
-    const activeFilter = buttons.find((button) => button.getAttribute("aria-pressed") === "true")?.dataset.filter;
-    const currentIndex = filters.indexOf(activeFilter);
-    setDispatchFilter(filters[(currentIndex + 1) % filters.length]);
-  }, DISPATCH_FILTER_ROTATION_MS);
+    dispatchPageIndex = (dispatchPageIndex + 1) % pageCount;
+    renderDispatchResults();
+  }, DISPATCH_PAGE_INTERVAL_MS);
 }
 
-function setDispatchFilterRotationPaused(isPaused) {
-  dispatchFilterRotationPaused = isPaused;
-  updateDispatchFilterRotationControl();
-  startDispatchFilterRotation();
+function setDispatchRotationPaused(isPaused) {
+  dispatchRotationPaused = isPaused;
+  updateDispatchRotationControl();
+  startDispatchRotation();
+}
+
+function dispatchRotationHasActiveInteraction() {
+  return Boolean(document.querySelector(
+    "#dispatch-feature:hover, #dispatch-feature:focus-within, #dispatch-grid:hover, #dispatch-grid:focus-within, "
+    + "[data-dispatch-action='previous-feature']:hover, [data-dispatch-action='previous-feature']:focus, "
+    + "[data-dispatch-action='next-feature']:hover, [data-dispatch-action='next-feature']:focus, "
+    + "[data-dispatch-action='previous-page']:hover, [data-dispatch-action='previous-page']:focus, "
+    + "[data-dispatch-action='next-page']:hover, [data-dispatch-action='next-page']:focus",
+  ));
 }
 
 document.addEventListener("click", (event) => {
   if (!(event.target instanceof Element)) return;
-  const rotationButton = event.target.closest(".filter-rotation-toggle");
-  if (rotationButton) {
-    setDispatchFilterRotationPaused(!dispatchFilterRotationPaused);
+  const filterButton = event.target.closest(".filter-button");
+  if (filterButton) {
+    setDispatchFilter(filterButton.dataset.filter);
     return;
   }
-  const filterButton = event.target.closest(".filter-button");
-  if (filterButton) setDispatchFilter(filterButton.dataset.filter);
+
+  const action = event.target.closest("[data-dispatch-action]")?.dataset.dispatchAction;
+  if (action === "toggle-rotation") {
+    setDispatchRotationPaused(!dispatchRotationPaused);
+  } else if (action === "previous-feature" && cachedDispatchFeed?.items.length) {
+    renderDispatchFeature(dispatchFeatureIndex - 1, -1);
+  } else if (action === "next-feature" && cachedDispatchFeed?.items.length) {
+    renderDispatchFeature(dispatchFeatureIndex + 1, 1);
+  } else if (action === "previous-page") {
+    dispatchPageIndex -= 1;
+    renderDispatchResults(-1);
+  } else if (action === "next-page") {
+    dispatchPageIndex += 1;
+    renderDispatchResults(1);
+  }
 });
 
 const menuToggle = document.querySelector(".menu-toggle");
@@ -876,7 +1166,18 @@ renderNotices = (notices) => {
 };
 
 function initializeMainContent() {
-  startDispatchFilterRotation();
+  if (dispatchPageIsActive()) {
+    void loadDispatchFeed().catch((error) => {
+      console.error("Dispatch content could not be loaded.", error);
+      const status = document.querySelector("#dispatch-feed-status");
+      if (status) {
+        status.textContent = translations[currentLanguage].dispatchFeedError;
+        status.hidden = false;
+      }
+    });
+  } else {
+    startDispatchRotation();
+  }
   if (document.querySelector("#notice-feed") || document.querySelector("#notice-preview-message")) {
     if (cachedNotices !== null) renderNotices(cachedNotices);
     else loadNotices();

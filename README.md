@@ -18,7 +18,7 @@ The browser-enforced Content Security Policy only allows the site's own scripts,
 
 ## Release numbering
 
-The current release is **V7.0.9**, following V7.0.8. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
+The current release is **V7.1.0**, following V7.0.9. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
 
 - Increase the final number for a minor patch; it may advance through 20.
 - After minor patch 20, advance the middle number and reset the final number to 0.
@@ -27,7 +27,9 @@ The current release is **V7.0.9**, following V7.0.8. Versions use `V<stable-buil
 
 When a release changes the site's HTML, CSS, or JavaScript, set the stylesheet and script `v` query to that release version in all four HTML pages together. This prevents browsers from combining a newly deployed page with cached older assets.
 
-Dispatch categories rotate every ten seconds. Rotation pauses while the Dispatch section is hovered or focused, or while the page is in the background. The pause/resume control lets visitors stop rotation at any time, and categories remain manually selectable.
+Dispatch content is driven by `assets/dispatch.json`: one featured post moves through the carousel every eight seconds, and selecting a category reveals up to three posts at a time. Categories with more posts page forward every ten seconds, with manual previous/next controls. Rotation pauses while a post or carousel/page control is hovered or focused, when the tab is in the background, and by default for visitors who prefer reduced motion. The pause/resume button stops or restarts automatic movement.
+
+To add a dispatch, append an item to the feed with a unique ID, category, icon, English and Portuguese metadata/title/body/link labels, and an allowed local-page or Discord URL. To include a real event photo, put an optimized image under `assets/dispatch/` and add an `image` object with its path and English/Portuguese alt text. To add a category, add its localized label to the feed and assign items to it. All feed text is inserted as text, and photos are restricted to local assets.
 
 ## Noticeboard feed
 
