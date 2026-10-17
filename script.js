@@ -620,7 +620,7 @@ if (noticeFeed || noticePreview) {
 
   async function loadNotices() {
     try {
-      const response = await fetch(noticeUrl, { headers: { Accept: "application/json" } });
+      const response = await fetch(noticeUrl, { cache: "no-store", headers: { Accept: "application/json" } });
       if (!response.ok) {
         throw new Error(`Notice feed returned HTTP ${response.status}.`);
       }

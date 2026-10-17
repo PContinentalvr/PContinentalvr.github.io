@@ -2,16 +2,11 @@
   "name": "continental-notice-bot",
   "version": "1.0.0",
   "private": true,
-  "description": "Read-only Discord notice bot and HTTPS feed for The Continental community site",
-  "main": "index.js",
+  "description": "One-shot Discord notice exporter for the static Continental community site",
   "scripts": {
-    "start": "node index.js"
+    "update-notices": "node --env-file=.env update-notices.js"
   },
   "engines": {
-    "node": ">=20"
-  },
-  "dependencies": {
-    "discord.js": "^14.22.1",
-    "dotenv": "^16.4.7"
+    "node": ">=20.6"
   }
 }
