@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=7.0.8">
-    <script src="script.js?v=7.0.8" defer></script>
+    <link rel="stylesheet" href="style.css?v=7.0.9">
+    <script src="script.js?v=7.0.9" defer></script>
   </head>
   <body class="inner-page dispatch-page">
     <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
@@ -39,7 +39,13 @@
       <main id="main">
         <section class="inner-hero section-pad"><p class="eyebrow"><span class="status-dot"></span><span data-i18n="dispatchEyebrow">FRESH FROM THE LOBBY</span></p><h1 data-i18n-html="dispatchTitle">The <em>dispatch.</em></h1><p data-i18n="pageDispatchDeck">A little of everything we're making, learning, watching, and sharing.</p><span class="inner-hero-stamp" aria-hidden="true">TC / 01</span></section>
         <section class="dispatch section-pad inner-content" aria-label="Community activities">
-          <div class="dispatch-toolbar"><p data-i18n="dispatchIntro">Workshops, art, films, and whatever else the night brings.</p><div class="feed-filters" role="group" aria-label="Filter dispatch posts" data-i18n-aria="filterLabel"><button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true"><span data-i18n="filterAll">Everything</span> <span aria-hidden="true">06</span></button><button class="filter-button" type="button" data-filter="workshop" aria-pressed="false" data-i18n="filterWorkshop">Workshops</button><button class="filter-button" type="button" data-filter="art" aria-pressed="false" data-i18n="filterArt">Art</button><button class="filter-button" type="button" data-filter="movie" aria-pressed="false" data-i18n="filterMovies">Movie nights</button><button class="filter-button" type="button" data-filter="notes" aria-pressed="false" data-i18n="filterNotes">House notes</button></div></div>
+          <div class="dispatch-toolbar">
+            <p data-i18n="dispatchIntro">Workshops, art, films, and whatever else the night brings.</p>
+            <div class="dispatch-filter-controls">
+              <div class="feed-filters" role="group" aria-label="Filter dispatch posts" data-i18n-aria="filterLabel"><button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true"><span data-i18n="filterAll">Everything</span> <span aria-hidden="true">06</span></button><button class="filter-button" type="button" data-filter="workshop" aria-pressed="false" data-i18n="filterWorkshop">Workshops</button><button class="filter-button" type="button" data-filter="art" aria-pressed="false" data-i18n="filterArt">Art</button><button class="filter-button" type="button" data-filter="movie" aria-pressed="false" data-i18n="filterMovies">Movie nights</button><button class="filter-button" type="button" data-filter="notes" aria-pressed="false" data-i18n="filterNotes">House notes</button></div>
+              <button class="filter-rotation-toggle" type="button" aria-label="Pause category rotation" data-i18n-aria="pauseFilterRotation" aria-pressed="false" title="Pause category rotation"><span class="filter-rotation-icon" aria-hidden="true">Ⅱ</span></button>
+            </div>
+          </div>
           <div class="dispatch-grid inner-dispatch-grid" aria-live="polite">
             <article class="dispatch-card" data-category="workshop"><div class="dispatch-icon" aria-hidden="true">✳</div><div class="card-body"><div class="card-meta"><span data-i18n="metaWorkshop">AVATAR WORKSHOP</span><span>01 / 06</span></div><h2 data-i18n-html="postWorkshopTitle">Make your avatar<br><em>more you.</em></h2><p data-i18n="postWorkshopText">Friendly, hands-on sessions for customizing VRChat avis. Bring a work in progress, ask questions, and learn at your own pace.</p><a class="card-link" data-community="discord" href="https://discord.gg/3VUYgddZGP" target="_blank" rel="noopener noreferrer"><span data-i18n="postWorkshopLink">Learn together</span><span aria-hidden="true">↗</span></a></div></article>
             <article class="dispatch-card" data-category="art"><div class="dispatch-icon" aria-hidden="true">♧</div><div class="card-body"><div class="card-meta"><span data-i18n="metaArt">ART & SHOW-AND-TELL</span><span>02 / 06</span></div><h2 data-i18n-html="postArtTitle">Made by hand.<br><em>Shared with friends.</em></h2><p data-i18n="postArtText">Drawing, digital art, 2D, 3D, and works in progress. Pull up a chair, share what you're making, or just enjoy the studio company.</p><a class="card-link" data-community="discord" href="https://discord.gg/3VUYgddZGP" target="_blank" rel="noopener noreferrer"><span data-i18n="postArtLink">Bring your creativity</span><span aria-hidden="true">↗</span></a></div></article>

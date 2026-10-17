@@ -18,7 +18,7 @@ The browser-enforced Content Security Policy only allows the site's own scripts,
 
 ## Release numbering
 
-The current release is **V7.0.8**, following V7.0.7. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
+The current release is **V7.0.9**, following V7.0.8. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
 
 - Increase the final number for a minor patch; it may advance through 20.
 - After minor patch 20, advance the middle number and reset the final number to 0.
@@ -26,6 +26,8 @@ The current release is **V7.0.8**, following V7.0.7. Versions use `V<stable-buil
 - Advance the first number for each new stable build.
 
 When a release changes the site's HTML, CSS, or JavaScript, set the stylesheet and script `v` query to that release version in all four HTML pages together. This prevents browsers from combining a newly deployed page with cached older assets.
+
+Dispatch categories rotate every ten seconds. Rotation pauses while the Dispatch section is hovered or focused, or while the page is in the background. The pause/resume control lets visitors stop rotation at any time, and categories remain manually selectable.
 
 ## Noticeboard feed
 

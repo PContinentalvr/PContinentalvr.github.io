@@ -100,6 +100,8 @@ const translations = {
     filterArt: "Art",
     filterMovies: "Movie nights",
     filterNotes: "House notes",
+    pauseFilterRotation: "Pause category rotation",
+    resumeFilterRotation: "Resume category rotation",
     catWorkshop: "HANDS-ON WORKSHOP",
     metaWorkshop: "AVATAR CUSTOMISATION",
     postWorkshopTitle: "Make your avatar<br><em>more you.</em>",
@@ -263,6 +265,8 @@ const translations = {
     filterArt: "Arte",
     filterMovies: "Filmes",
     filterNotes: "Recados da casa",
+    pauseFilterRotation: "Pausar a rotação das categorias",
+    resumeFilterRotation: "Retomar a rotação das categorias",
     catWorkshop: "OFICINA NA PRÁTICA",
     metaWorkshop: "PERSONALIZAÇÃO DE AVATARES",
     postWorkshopTitle: "Deixe seu avatar<br><em>com a sua cara.</em>",
@@ -443,6 +447,7 @@ function setLanguage(language) {
   updateMenuLabel();
   updateWatchLabel();
   updateVolumeLabel();
+  updateDispatchFilterRotationControl();
   if (cachedNotices !== null) renderNotices(cachedNotices);
 }
 
@@ -461,9 +466,66 @@ function setDispatchFilter(filter) {
   }
 }
 
+let dispatchFilterInterval = null;
+let dispatchFilterRotationPaused = false;
+const DISPATCH_FILTER_ROTATION_MS = 10000;
+
+function updateDispatchFilterRotationControl() {
+  const button = document.querySelector(".filter-rotation-toggle");
+  if (!button) return;
+
+  const isPaused = dispatchFilterRotationPaused;
+  const label = translations[currentLanguage][isPaused ? "resumeFilterRotation" : "pauseFilterRotation"];
+  button.setAttribute("aria-pressed", String(isPaused));
+  button.setAttribute("aria-label", label);
+  button.title = label;
+  button.querySelector(".filter-rotation-icon").textContent = isPaused ? "▶" : "Ⅱ";
+}
+
+function startDispatchFilterRotation() {
+  if (dispatchFilterInterval !== null) {
+    window.clearInterval(dispatchFilterInterval);
+    dispatchFilterInterval = null;
+  }
+
+  const buttons = [...document.querySelectorAll(".filter-button")];
+  if (dispatchFilterRotationPaused || !buttons.length || !document.querySelector(".dispatch-card")) return;
+
+  const filters = buttons
+    .map((button) => button.dataset.filter)
+    .filter((filter) => filter && filter !== "all");
+  if (filters.length < 2) return;
+
+  dispatchFilterInterval = window.setInterval(() => {
+    const dispatchSection = document.querySelector(".dispatch");
+    if (
+      document.hidden
+      || !dispatchSection
+      || dispatchSection.matches(":hover")
+      || dispatchSection.querySelector(":focus")
+    ) return;
+
+    const activeFilter = buttons.find((button) => button.getAttribute("aria-pressed") === "true")?.dataset.filter;
+    const currentIndex = filters.indexOf(activeFilter);
+    setDispatchFilter(filters[(currentIndex + 1) % filters.length]);
+  }, DISPATCH_FILTER_ROTATION_MS);
+}
+
+function setDispatchFilterRotationPaused(isPaused) {
+  dispatchFilterRotationPaused = isPaused;
+  updateDispatchFilterRotationControl();
+  startDispatchFilterRotation();
+}
+
 document.addEventListener("click", (event) => {
-  const button = event.target instanceof Element ? event.target.closest(".filter-button") : null;
-  if (button) setDispatchFilter(button.dataset.filter);
+  if (!(event.target instanceof Element)) return;
+  const rotationButton = event.target.closest(".filter-rotation-toggle");
+  if (rotationButton) {
+    setDispatchFilterRotationPaused(!dispatchFilterRotationPaused);
+    return;
+  }
+  const filterButton = event.target.closest(".filter-button");
+  if (filterButton) setDispatchFilter(filterButton.dataset.filter);
 });
 
 const menuToggle = document.querySelector(".menu-toggle");
@@ -814,6 +876,7 @@ renderNotices = (notices) => {
 };
 
 function initializeMainContent() {
+  startDispatchFilterRotation();
   if (document.querySelector("#notice-feed") || document.querySelector("#notice-preview-message")) {
     if (cachedNotices !== null) renderNotices(cachedNotices);
     else loadNotices();
