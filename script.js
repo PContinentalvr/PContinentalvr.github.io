@@ -446,18 +446,24 @@ function setLanguage(language) {
   if (cachedNotices !== null) renderNotices(cachedNotices);
 }
 
-document.addEventListener("click", (event) => {
-  const button = event.target instanceof Element ? event.target.closest(".filter-button") : null;
-  if (!button) return;
-  const filter = button.dataset.filter;
-  for (const item of document.querySelectorAll(".filter-button")) {
-    const isActive = item === button;
-    item.classList.toggle("is-active", isActive);
-    item.setAttribute("aria-pressed", String(isActive));
+function setDispatchFilter(filter) {
+  const buttons = document.querySelectorAll(".filter-button");
+  const cards = document.querySelectorAll(".dispatch-card");
+  if (!buttons.length || !cards.length || ![...buttons].some((button) => button.dataset.filter === filter)) return;
+
+  for (const button of buttons) {
+    const isActive = button.dataset.filter === filter;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
   }
-  for (const card of document.querySelectorAll(".dispatch-card")) {
+  for (const card of cards) {
     card.hidden = filter !== "all" && card.dataset.category !== filter;
   }
+}
+
+document.addEventListener("click", (event) => {
+  const button = event.target instanceof Element ? event.target.closest(".filter-button") : null;
+  if (button) setDispatchFilter(button.dataset.filter);
 });
 
 const menuToggle = document.querySelector(".menu-toggle");
@@ -599,6 +605,7 @@ languageToggle.addEventListener("click", () => {
 
 const houseAudio = document.querySelector("#house-audio");
 const soundToggle = document.querySelector(".sound-toggle");
+houseAudio.volume = 0.1;
 const volumeControl = document.createElement("div");
 volumeControl.className = "volume-control";
 const volumeToggle = document.createElement("button");
