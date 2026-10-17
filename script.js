@@ -33,6 +33,9 @@ const translations = {
     musicOff: "Play house music",
     musicOn: "Music is playing",
     musicUnavailable: "Background music could not be loaded",
+    openVolume: "Open music volume",
+    closeVolume: "Close music volume",
+    volumeLabel: "HOUSE MUSIC · VOLUME",
     openMenu: "Open navigation",
     closeMenu: "Close navigation",
     noticeEyebrow: "LATEST FROM THE NOTICEBOARD",
@@ -78,6 +81,7 @@ const translations = {
     heroArtAlt: "Original illustration of a golden-lit hotel entrance at night",
     signTop: "A HOUSE BETWEEN WORLDS",
     signBottom: "ROOM FOR ONE MORE",
+    artCaptionCompany: "✳ GOOD COMPANY",
     artCaption: "AFTER HOURS · GMT−3",
     artSideLabel: "YOUR WORLD, YOUR WAY",
     scrollExplore: "SCROLL TO EXPLORE",
@@ -192,6 +196,9 @@ const translations = {
     musicOff: "Tocar música da casa",
     musicOn: "Música tocando",
     musicUnavailable: "Não foi possível carregar a música de fundo",
+    openVolume: "Abrir o volume da música",
+    closeVolume: "Fechar o volume da música",
+    volumeLabel: "MÚSICA DA CASA · VOLUME",
     openMenu: "Abrir navegação",
     closeMenu: "Fechar navegação",
     noticeEyebrow: "ÚLTIMAS DO MURAL",
@@ -237,6 +244,7 @@ const translations = {
     heroArtAlt: "Ilustração original da entrada de um hotel iluminado em dourado à noite",
     signTop: "UMA CASA ENTRE MUNDOS",
     signBottom: "SEMPRE CABE MAIS UM",
+    artCaptionCompany: "✳ BOA COMPANHIA",
     artCaption: "DEPOIS DA MEIA-NOITE · GMT−3",
     artSideLabel: "SEU MUNDO, DO SEU JEITO",
     scrollExplore: "EXPLORE A CASA",
@@ -327,13 +335,16 @@ const translations = {
   },
 };
 
-for (const link of document.querySelectorAll("[data-community]")) {
-  const destination = COMMUNITY_LINKS[link.dataset.community];
-  if (!destination) {
-    throw new Error(`Missing community destination for "${link.dataset.community}".`);
+function updateCommunityLinks() {
+  for (const link of document.querySelectorAll("[data-community]")) {
+    const destination = COMMUNITY_LINKS[link.dataset.community];
+    if (!destination) {
+      throw new Error(`Missing community destination for "${link.dataset.community}".`);
+    }
+    link.href = destination;
   }
-  link.href = destination;
 }
+updateCommunityLinks();
 
 let currentLanguage = new URLSearchParams(window.location.search).get("lang");
 if (currentLanguage !== "pt" && currentLanguage !== "en") {
@@ -351,6 +362,8 @@ const languageToggle = document.querySelector(".language-toggle");
 const pageDescription = document.querySelector('meta[name="description"]');
 let cachedNotices = null;
 let renderNotices = () => {};
+let noticesRefreshInterval = null;
+let scrollObserver = null;
 const pageTitles = {
   en: {
     home: "The Continental — After-hours Social House",
@@ -412,7 +425,7 @@ function setLanguage(language) {
   languageToggle.lang = language === "en" ? "pt" : "en";
   const url = new URL(window.location.href);
   url.searchParams.set("lang", language);
-  window.history.replaceState(null, "", url);
+  window.history.replaceState(window.history.state, "", url);
   try {
     window.localStorage.setItem("continental-language", language);
   } catch (error) {
@@ -425,29 +438,26 @@ function setLanguage(language) {
       link.href = `${target.pathname}${target.search}${target.hash}`;
     }
   }
+  updateCommunityLinks();
   updateMusicLabel();
   updateMenuLabel();
   updateWatchLabel();
+  updateVolumeLabel();
   if (cachedNotices !== null) renderNotices(cachedNotices);
 }
 
-const filterButtons = document.querySelectorAll(".filter-button");
-const dispatchCards = document.querySelectorAll(".dispatch-card");
-
-filterButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const filter = button.dataset.filter;
-
-    filterButtons.forEach((item) => {
-      const isActive = item === button;
-      item.classList.toggle("is-active", isActive);
-      item.setAttribute("aria-pressed", String(isActive));
-    });
-
-    dispatchCards.forEach((card) => {
-      card.hidden = filter !== "all" && card.dataset.category !== filter;
-    });
-  });
+document.addEventListener("click", (event) => {
+  const button = event.target instanceof Element ? event.target.closest(".filter-button") : null;
+  if (!button) return;
+  const filter = button.dataset.filter;
+  for (const item of document.querySelectorAll(".filter-button")) {
+    const isActive = item === button;
+    item.classList.toggle("is-active", isActive);
+    item.setAttribute("aria-pressed", String(isActive));
+  }
+  for (const card of document.querySelectorAll(".dispatch-card")) {
+    card.hidden = filter !== "all" && card.dataset.category !== filter;
+  }
 });
 
 const menuToggle = document.querySelector(".menu-toggle");
@@ -523,7 +533,10 @@ function updateWatchLabel() {
 }
 
 watchToggle.addEventListener("click", () => {
-  setWatchOpen(watchToggle.getAttribute("aria-expanded") !== "true");
+  const isOpening = watchToggle.getAttribute("aria-expanded") !== "true";
+  if (isOpening && !volumePanel.hidden) setVolumeOpen(false);
+  if (isOpening && menuToggle.getAttribute("aria-expanded") === "true") setMenuOpen(false);
+  setWatchOpen(isOpening);
 });
 
 document.addEventListener("click", (event) => {
@@ -533,15 +546,18 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !volumePanel.hidden) {
+    setVolumeOpen(false);
+    volumeToggle.focus();
+    return;
+  }
   if (event.key === "Escape" && !watchPanel.hidden) {
     setWatchOpen(false);
     watchToggle.focus();
     return;
   }
   if (event.key === "Escape" && menuToggle.getAttribute("aria-expanded") === "true") {
-    menuToggle.setAttribute("aria-expanded", "false");
-    siteNavigation.classList.remove("is-open");
-    updateMenuLabel();
+    setMenuOpen(false);
     menuToggle.focus();
   }
 });
@@ -557,18 +573,23 @@ function updateMenuLabel() {
   menuToggle.setAttribute("aria-label", translations[currentLanguage][isExpanded ? "closeMenu" : "openMenu"]);
 }
 
+function setMenuOpen(isOpen) {
+  menuToggle.setAttribute("aria-expanded", String(isOpen));
+  siteNavigation.classList.toggle("is-open", isOpen);
+  updateMenuLabel();
+}
+
 menuToggle.addEventListener("click", () => {
   const isExpanded = menuToggle.getAttribute("aria-expanded") === "true";
-  menuToggle.setAttribute("aria-expanded", String(!isExpanded));
-  siteNavigation.classList.toggle("is-open", !isExpanded);
-  updateMenuLabel();
+  const isOpening = !isExpanded;
+  if (isOpening && !watchPanel.hidden) setWatchOpen(false);
+  if (isOpening && !volumePanel.hidden) setVolumeOpen(false);
+  setMenuOpen(isOpening);
 });
 
 siteNavigation.addEventListener("click", (event) => {
   if (event.target.closest("a") && siteNavigation.classList.contains("is-open")) {
-    menuToggle.setAttribute("aria-expanded", "false");
-    siteNavigation.classList.remove("is-open");
-    updateMenuLabel();
+    setMenuOpen(false);
   }
 });
 
@@ -578,6 +599,95 @@ languageToggle.addEventListener("click", () => {
 
 const houseAudio = document.querySelector("#house-audio");
 const soundToggle = document.querySelector(".sound-toggle");
+const volumeControl = document.createElement("div");
+volumeControl.className = "volume-control";
+const volumeToggle = document.createElement("button");
+volumeToggle.className = "tool-button volume-toggle";
+volumeToggle.type = "button";
+volumeToggle.setAttribute("aria-expanded", "false");
+volumeToggle.setAttribute("aria-controls", "volume-panel");
+const comet = document.createElement("span");
+comet.className = "volume-comet";
+comet.setAttribute("aria-hidden", "true");
+comet.textContent = "✦";
+volumeToggle.append(comet);
+const volumePanel = document.createElement("div");
+volumePanel.className = "volume-panel";
+volumePanel.id = "volume-panel";
+volumePanel.hidden = true;
+volumePanel.setAttribute("role", "group");
+const volumeLabel = document.createElement("label");
+volumeLabel.htmlFor = "music-volume";
+const volumeRow = document.createElement("div");
+volumeRow.className = "volume-slider-row";
+const volumeSlider = document.createElement("input");
+volumeSlider.className = "volume-slider";
+volumeSlider.id = "music-volume";
+volumeSlider.type = "range";
+volumeSlider.min = "0";
+volumeSlider.max = "1";
+volumeSlider.step = "0.01";
+const volumeLevel = document.createElement("output");
+volumeLevel.className = "volume-level";
+volumeLevel.htmlFor = volumeSlider.id;
+volumeLevel.setAttribute("aria-hidden", "true");
+volumeRow.append(volumeSlider, volumeLevel);
+volumePanel.append(volumeLabel, volumeRow);
+volumeControl.append(volumeToggle, volumePanel);
+document.querySelector(".header-tools").insertBefore(volumeControl, menuToggle);
+
+try {
+  const savedVolume = window.localStorage.getItem("continental-music-volume");
+  if (savedVolume !== null && savedVolume.trim() !== "") {
+    const parsedVolume = Number(savedVolume);
+    if (Number.isFinite(parsedVolume) && parsedVolume >= 0 && parsedVolume <= 1) {
+      houseAudio.volume = parsedVolume;
+    }
+  }
+} catch (error) {
+  console.warn("Music volume preference could not be read from local storage.", error);
+}
+volumeSlider.value = String(houseAudio.volume);
+
+function updateVolumeLabel() {
+  volumeLabel.textContent = translations[currentLanguage].volumeLabel;
+  volumeSlider.setAttribute("aria-label", translations[currentLanguage].volumeLabel);
+  volumeLevel.value = `${Math.round(houseAudio.volume * 100)}%`;
+  volumeLevel.textContent = volumeLevel.value;
+  volumeSlider.setAttribute("aria-valuetext", volumeLevel.value);
+  const isExpanded = volumeToggle.getAttribute("aria-expanded") === "true";
+  volumeToggle.setAttribute("aria-label", translations[currentLanguage][isExpanded ? "closeVolume" : "openVolume"]);
+}
+
+function setVolumeOpen(isOpen) {
+  volumeToggle.setAttribute("aria-expanded", String(isOpen));
+  volumePanel.hidden = !isOpen;
+  updateVolumeLabel();
+  if (isOpen) volumeSlider.focus();
+}
+
+volumeToggle.addEventListener("click", () => {
+  const isOpening = volumePanel.hidden;
+  if (isOpening && !watchPanel.hidden) setWatchOpen(false);
+  if (isOpening && menuToggle.getAttribute("aria-expanded") === "true") setMenuOpen(false);
+  setVolumeOpen(isOpening);
+});
+
+volumeSlider.addEventListener("input", () => {
+  houseAudio.volume = Number(volumeSlider.value);
+  updateVolumeLabel();
+  try {
+    window.localStorage.setItem("continental-music-volume", volumeSlider.value);
+  } catch (error) {
+    console.warn("Music volume preference could not be saved to local storage.", error);
+  }
+});
+
+document.addEventListener("click", (event) => {
+  if (!volumePanel.hidden && !volumeControl.contains(event.target)) {
+    setVolumeOpen(false);
+  }
+});
 
 function updateMusicLabel() {
   const isPlaying = !houseAudio.paused;
@@ -612,92 +722,250 @@ houseAudio.addEventListener("error", () => {
   console.error("The supplied background music could not be loaded.", houseAudio.error);
   soundToggle.querySelector(".sound-label").textContent = translations[currentLanguage].musicUnavailable;
 });
+updateVolumeLabel();
 
-const noticeFeed = document.querySelector("#notice-feed");
-const noticePreview = document.querySelector("#notice-preview-message");
-if (noticeFeed || noticePreview) {
+async function loadNotices() {
+  const noticeFeed = document.querySelector("#notice-feed");
+  const noticePreview = document.querySelector("#notice-preview-message");
+  if (!noticeFeed && !noticePreview) return;
   const noticeUrl = noticeFeed?.dataset.feedUrl || noticePreview?.dataset.feedUrl || DEFAULT_NOTICE_FEED;
 
-  async function loadNotices() {
-    try {
-      const response = await fetch(noticeUrl, { cache: "no-store", headers: { Accept: "application/json" } });
-      if (!response.ok) {
-        throw new Error(`Notice feed returned HTTP ${response.status}.`);
-      }
-      const notices = await response.json();
-      if (!Array.isArray(notices)) {
-        throw new TypeError("Notice feed must return a JSON array.");
-      }
-
-      if (notices.some((notice) => !notice || typeof notice.title !== "string" || typeof notice.body !== "string")) {
-        throw new TypeError("Each notice must include string title and body fields.");
-      }
-      cachedNotices = notices.slice(0, 10);
-      renderNotices(cachedNotices);
-    } catch (error) {
-      console.error("The noticeboard could not be loaded.", error);
-      if (noticeFeed) {
-        const failed = document.createElement("p");
-        failed.className = "notice-status";
-        failed.textContent = translations[currentLanguage].noticeFailed;
-        noticeFeed.replaceChildren(failed);
-      }
-      if (noticePreview) noticePreview.textContent = translations[currentLanguage].noticeFailed;
+  try {
+    const response = await fetch(noticeUrl, { cache: "no-store", headers: { Accept: "application/json" } });
+    if (!response.ok) {
+      throw new Error(`Notice feed returned HTTP ${response.status}.`);
     }
+    const notices = await response.json();
+    if (!Array.isArray(notices)) {
+      throw new TypeError("Notice feed must return a JSON array.");
+    }
+
+    if (notices.some((notice) => !notice || typeof notice.title !== "string" || typeof notice.body !== "string")) {
+      throw new TypeError("Each notice must include string title and body fields.");
+    }
+    cachedNotices = notices.slice(0, 10);
+    renderNotices(cachedNotices);
+  } catch (error) {
+    console.error("The noticeboard could not be loaded.", error);
+    const currentFeed = document.querySelector("#notice-feed");
+    const currentPreview = document.querySelector("#notice-preview-message");
+    if (currentFeed) {
+      const failed = document.createElement("p");
+      failed.className = "notice-status";
+      failed.textContent = translations[currentLanguage].noticeFailed;
+      currentFeed.replaceChildren(failed);
+    }
+    if (currentPreview) currentPreview.textContent = translations[currentLanguage].noticeFailed;
   }
-
-  renderNotices = (notices) => {
-    if (noticePreview) {
-      const latest = notices[0];
-      noticePreview.textContent = latest
-        ? `${latest.title.slice(0, 160)} — ${latest.body.replace(/\s+/g, " ").slice(0, 180)}`
-        : translations[currentLanguage].noticeDescription;
-    }
-    if (noticeFeed) {
-      noticeFeed.replaceChildren();
-      for (const notice of notices) {
-        const item = document.createElement("article");
-        item.className = "notice-item";
-        const heading = document.createElement("h3");
-        heading.textContent = notice.title.slice(0, 160);
-        const body = document.createElement("p");
-        body.textContent = notice.body.slice(0, 2000);
-        item.append(heading, body);
-        if (typeof notice.author === "string" && notice.author.length) {
-          const author = document.createElement("span");
-          author.className = "notice-author";
-          author.textContent = `${translations[currentLanguage].noticePostedBy} ${notice.author.slice(0, 80)}`;
-          item.append(author);
-        }
-        if (typeof notice.createdAt === "string" && !Number.isNaN(Date.parse(notice.createdAt))) {
-          const timestamp = document.createElement("time");
-          timestamp.dateTime = notice.createdAt;
-          timestamp.textContent = new Intl.DateTimeFormat(currentLanguage === "pt" ? "pt-BR" : "en-GB", {
-            dateStyle: "medium",
-            timeStyle: "short",
-          }).format(new Date(notice.createdAt));
-          item.append(timestamp);
-        }
-        noticeFeed.append(item);
-      }
-      if (notices.length === 0) {
-        const quiet = document.createElement("p");
-        quiet.className = "notice-status";
-        quiet.textContent = translations[currentLanguage].noticeQuiet;
-        noticeFeed.append(quiet);
-      }
-      const checkedAt = document.querySelector("#notice-checked");
-      if (checkedAt) checkedAt.textContent = new Intl.DateTimeFormat(currentLanguage === "pt" ? "pt-BR" : "en-GB", { timeStyle: "short" }).format(new Date());
-    }
-  };
-
-  loadNotices();
-  window.setInterval(() => {
-    if (!document.hidden) loadNotices();
-  }, 60_000);
 }
 
+renderNotices = (notices) => {
+  const noticePreview = document.querySelector("#notice-preview-message");
+  const noticeFeed = document.querySelector("#notice-feed");
+  if (noticePreview) {
+    const latest = notices[0];
+    noticePreview.textContent = latest
+      ? `${latest.title.slice(0, 160)} — ${latest.body.replace(/\s+/g, " ").slice(0, 180)}`
+      : translations[currentLanguage].noticeDescription;
+  }
+  if (noticeFeed) {
+    noticeFeed.replaceChildren();
+    for (const notice of notices) {
+      const item = document.createElement("article");
+      item.className = "notice-item";
+      const heading = document.createElement("h3");
+      heading.textContent = notice.title.slice(0, 160);
+      const body = document.createElement("p");
+      body.textContent = notice.body.slice(0, 2000);
+      item.append(heading, body);
+      if (typeof notice.author === "string" && notice.author.length) {
+        const author = document.createElement("span");
+        author.className = "notice-author";
+        author.textContent = `${translations[currentLanguage].noticePostedBy} ${notice.author.slice(0, 80)}`;
+        item.append(author);
+      }
+      if (typeof notice.createdAt === "string" && !Number.isNaN(Date.parse(notice.createdAt))) {
+        const timestamp = document.createElement("time");
+        timestamp.dateTime = notice.createdAt;
+        timestamp.textContent = new Intl.DateTimeFormat(currentLanguage === "pt" ? "pt-BR" : "en-GB", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(new Date(notice.createdAt));
+        item.append(timestamp);
+      }
+      noticeFeed.append(item);
+    }
+    if (notices.length === 0) {
+      const quiet = document.createElement("p");
+      quiet.className = "notice-status";
+      quiet.textContent = translations[currentLanguage].noticeQuiet;
+      noticeFeed.append(quiet);
+    }
+    const checkedAt = document.querySelector("#notice-checked");
+    if (checkedAt) checkedAt.textContent = new Intl.DateTimeFormat(currentLanguage === "pt" ? "pt-BR" : "en-GB", { timeStyle: "short" }).format(new Date());
+  }
+};
+
+function initializeMainContent() {
+  if (document.querySelector("#notice-feed") || document.querySelector("#notice-preview-message")) {
+    if (cachedNotices !== null) renderNotices(cachedNotices);
+    else loadNotices();
+    if (noticesRefreshInterval === null) {
+      noticesRefreshInterval = window.setInterval(() => {
+        if (!document.hidden) loadNotices();
+      }, 60_000);
+    }
+  }
+  for (const section of document.querySelectorAll(".reveal-on-scroll")) {
+    scrollObserver?.observe(section);
+  }
+}
+
+const pageRoutes = new Map([
+  ["index.html", "home-page"],
+  ["dispatch.html", "dispatch-page"],
+  ["gatherings.html", "gatherings-page"],
+  ["people.html", "people-page"],
+]);
+const routeBodyClasses = ["home-page", "inner-page", "dispatch-page", "gatherings-page", "people-page"];
+let routeRequestController = null;
+let scrollStateFrame = null;
+
+async function navigateWithinSite(destination, { addHistory = true, restoreScroll = false } = {}) {
+  routeRequestController?.abort();
+  const controller = new AbortController();
+  routeRequestController = controller;
+
+  try {
+    const response = await fetch(destination.href, {
+      headers: { Accept: "text/html" },
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(`Page navigation returned HTTP ${response.status}.`);
+    const responseUrl = new URL(response.url);
+    const directory = new URL(".", window.location.href);
+    const destinationName = responseUrl.pathname.split("/").pop();
+    if (
+      responseUrl.origin !== window.location.origin
+      || !responseUrl.pathname.startsWith(directory.pathname)
+      || !pageRoutes.has(destinationName)
+    ) {
+      throw new TypeError("Page navigation resolved outside the site's page routes.");
+    }
+
+    const incomingDocument = new DOMParser().parseFromString(await response.text(), "text/html");
+    const incomingMain = incomingDocument.querySelector("#main");
+    const currentMain = document.querySelector("#main");
+    if (!incomingMain || !currentMain || !incomingDocument.title) {
+      throw new TypeError("The requested page is missing its main content or title.");
+    }
+
+    if (addHistory) {
+      window.history.replaceState(
+        Object.assign({}, window.history.state || {}, { scrollY: window.scrollY }),
+        "",
+        window.location.href,
+      );
+    }
+    for (const section of currentMain.querySelectorAll(".reveal-on-scroll")) {
+      scrollObserver?.unobserve(section);
+    }
+    currentMain.replaceWith(incomingMain);
+    document.body.classList.remove(...routeBodyClasses);
+    const bodyClass = pageRoutes.get(destinationName);
+    document.body.classList.add(bodyClass);
+    if (bodyClass !== "home-page") document.body.classList.add("inner-page");
+    document.title = incomingDocument.title;
+
+    for (const link of siteNavigation.querySelectorAll("a[href]")) {
+      const linkUrl = new URL(link.href, window.location.href);
+      if (linkUrl.pathname === responseUrl.pathname && !link.classList.contains("nav-join")) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    }
+
+    if (menuToggle.getAttribute("aria-expanded") === "true") setMenuOpen(false);
+    if (!watchPanel.hidden) setWatchOpen(false);
+
+    const language = destination.searchParams.get("lang");
+    setLanguage(language === "pt" || language === "en" ? language : currentLanguage);
+    initializeMainContent();
+
+    const pageHeading = incomingMain.querySelector("h1");
+    if (pageHeading) {
+      pageHeading.setAttribute("tabindex", "-1");
+      pageHeading.focus({ preventScroll: true });
+      pageHeading.addEventListener("blur", () => pageHeading.removeAttribute("tabindex"), { once: true });
+    }
+
+    if (addHistory) {
+      window.history.pushState({ scrollY: 0 }, "", destination.href);
+    }
+    const hashTarget = destination.hash
+      ? document.getElementById(decodeURIComponent(destination.hash.slice(1)))
+      : null;
+    if (hashTarget) hashTarget.scrollIntoView();
+    else if (restoreScroll) window.scrollTo(0, Number(window.history.state?.scrollY) || 0);
+    else window.scrollTo(0, 0);
+  } catch (error) {
+    if (error.name === "AbortError") return;
+    console.error("In-page navigation failed; loading the requested page normally.", error);
+    window.location.assign(destination.href);
+  }
+}
+
+window.history.replaceState(
+  Object.assign({}, window.history.state || {}, { scrollY: window.scrollY }),
+  "",
+  window.location.href,
+);
+
+document.addEventListener("click", (event) => {
+  if (
+    event.defaultPrevented
+    || event.button !== 0
+    || event.metaKey
+    || event.ctrlKey
+    || event.shiftKey
+    || event.altKey
+  ) return;
+  const anchor = event.target instanceof Element ? event.target.closest("a[href]") : null;
+  if (!anchor || anchor.target && anchor.target !== "_self" || anchor.hasAttribute("download")) return;
+
+  const destination = new URL(anchor.href, window.location.href);
+  const directory = new URL(".", window.location.href);
+  const name = destination.pathname.split("/").pop();
+  if (
+    destination.origin !== window.location.origin
+    || !destination.pathname.startsWith(directory.pathname)
+    || !pageRoutes.has(name)
+    || destination.pathname === window.location.pathname
+  ) return;
+
+  event.preventDefault();
+  void navigateWithinSite(destination);
+});
+
+window.addEventListener("popstate", () => {
+  void navigateWithinSite(new URL(window.location.href), { addHistory: false, restoreScroll: true });
+});
+
+window.addEventListener("scroll", () => {
+  if (scrollStateFrame !== null) return;
+  scrollStateFrame = window.requestAnimationFrame(() => {
+    window.history.replaceState(
+      Object.assign({}, window.history.state || {}, { scrollY: window.scrollY }),
+      "",
+      window.location.href,
+    );
+    scrollStateFrame = null;
+  });
+}, { passive: true });
+
 setLanguage(requestedLanguage);
+initializeMainContent();
 houseAudio.play().catch((error) => {
   if (error.name !== "NotAllowedError") {
     console.error("Background music could not be started automatically.", error);
@@ -706,7 +974,7 @@ houseAudio.play().catch((error) => {
 });
 
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
-  const scrollObserver = new IntersectionObserver((entries, observer) => {
+  scrollObserver = new IntersectionObserver((entries, observer) => {
     for (const entry of entries) {
       if (entry.isIntersecting) {
         entry.target.classList.add("is-visible");

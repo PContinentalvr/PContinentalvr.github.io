@@ -45,6 +45,21 @@ button { color: inherit; font: inherit; }
 .tool-button:hover, .tool-button:focus-visible { border-color: var(--gold-muted); color: var(--gold-bright); }
 .language-toggle { min-width: 39px; color: var(--gold-bright); }
 .sound-toggle.is-playing { border-color: var(--gold-muted); background: #211d14; color: var(--gold-bright); }
+.volume-control { position: relative; }
+.volume-toggle[aria-expanded="true"] { border-color: var(--gold-muted); background: #211d14; color: var(--gold-bright); }
+.volume-comet { position: relative; display: grid; width: 17px; height: 17px; place-items: center; color: var(--gold-bright); font-size: 15px; filter: drop-shadow(0 0 5px rgb(227 199 140 / 60%)); animation: comet-spin 5s linear infinite; }
+.volume-comet::before { position: absolute; inset: 1px; border: 1px solid rgb(200 169 110 / 42%); border-radius: 50%; content: ""; transform: scaleX(1.45) rotate(-35deg); }
+.volume-panel { position: absolute; z-index: 12; top: calc(100% + 9px); right: 0; display: grid; width: min(218px, calc(100vw - 30px)); gap: 12px; padding: 15px 16px 13px; border: 1px solid #887044; background: linear-gradient(145deg, #1c1a15 0, #10100e 78%); box-shadow: 0 14px 36px #000b, inset 0 0 0 4px #14130f, inset 0 0 0 5px rgb(200 169 110 / 18%); }
+.volume-panel[hidden] { display: none; }
+.volume-panel label { color: #a68d5c; font: 7px var(--mono); letter-spacing: .12em; }
+.volume-slider-row { display: flex; align-items: center; gap: 11px; }
+.volume-slider { width: 100%; height: 18px; margin: 0; appearance: none; background: transparent; cursor: pointer; }
+.volume-slider::-webkit-slider-runnable-track { height: 2px; border: 1px solid #675333; background: linear-gradient(90deg, #e3c78c, #816d48); }
+.volume-slider::-moz-range-track { height: 2px; border: 1px solid #675333; background: linear-gradient(90deg, #e3c78c, #816d48); }
+.volume-slider::-webkit-slider-thumb { width: 13px; height: 13px; margin-top: -6px; appearance: none; border: 1px solid #f0dcae; background: #d5b878; clip-path: polygon(50% 0,62% 35%,100% 50%,62% 63%,50% 100%,37% 63%,0 50%,37% 36%); filter: drop-shadow(0 0 5px #e3c78c); animation: comet-spin 4s linear infinite; }
+.volume-slider::-moz-range-thumb { width: 13px; height: 13px; border: 1px solid #f0dcae; border-radius: 0; background: #d5b878; clip-path: polygon(50% 0,62% 35%,100% 50%,62% 63%,50% 100%,37% 63%,0 50%,37% 36%); filter: drop-shadow(0 0 5px #e3c78c); animation: comet-spin 4s linear infinite; }
+.volume-slider:focus-visible { outline: 1px solid var(--gold-bright); outline-offset: 5px; }
+.volume-level { min-width: 30px; color: #e8d8b8; font: 8px var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
 .sound-icon { display: flex; height: 13px; align-items: center; gap: 2px; }
 .sound-icon i { width: 2px; height: 4px; background: currentcolor; }
 .sound-icon i:nth-child(2) { height: 9px; }
@@ -339,6 +354,7 @@ h1 em, h2 em { color: var(--gold-bright); font-weight: 500; }
 @keyframes moon-glow { 0%,100% { box-shadow: 0 0 36px rgb(218 183 110 / 6%); } 50% { box-shadow: 0 0 60px rgb(218 183 110 / 15%); } }
 @keyframes ticker-scroll { to { transform: translateX(-50%); } }
 @keyframes slow-spin { to { transform: translateX(-50%) rotate(360deg); } }
+@keyframes comet-spin { to { rotate: 360deg; } }
 @keyframes building-arrive { from { opacity: 0; transform: translate(-50%,12px) scale(var(--building-scale)); } to { opacity: 1; transform: translate(-50%,0) scale(var(--building-scale)); } }
 @keyframes equalize { to { transform: scaleY(.45); } }
 @keyframes gilded-glint { 0%, 70%, 100% { background-position: 120% 120%; } 84% { background-position: -20% -20%; } }
@@ -472,6 +488,7 @@ h1 em, h2 em { color: var(--gold-bright); font-weight: 500; }
   .wordmark-copy small { font-size: 6px; letter-spacing: .12em; }
   .header-tools { gap: 4px; }
   .header-tools .tool-button { width: 31px; min-width: 31px; height: 34px; padding: 0; }
+  .volume-toggle { width: 31px; min-width: 31px; }
   .header-tools .menu-toggle { width: 34px; }
   .hero-actions { align-items: flex-start; flex-direction: column; gap: 17px; }
   .hero-art { min-height: 270px; }

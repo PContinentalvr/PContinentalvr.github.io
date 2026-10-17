@@ -12,13 +12,13 @@ Update the `vrchat` and `discord` destinations in `COMMUNITY_LINKS` in `script.j
 
 The landing page is `index.html`; the other pages are `dispatch.html`, `gatherings.html`, and `people.html`. UI translations live in the `translations` object in `script.js`; add matching strings in both `en` and `pt` when adding translatable text.
 
-The background audio file is `assets/backgroundost.mp3`. Browsers may block sound autoplay until someone interacts with the page; the music button in the header lets visitors start or pause the track.
+The background audio file is `assets/backgroundost.mp3`. Browsers may block sound autoplay until someone interacts with the page; the music button in the header lets visitors start or pause the track, and the spinning comet opens its volume slider. Internal links between the four site pages are loaded in place so the audio keeps playing without restarting; a full browser reload may still interrupt playback.
 
 The browser-enforced Content Security Policy only allows the site's own scripts, styles, and audio, plus Google Fonts for type. Review that policy if you add an external embed, script, image, or media source.
 
 ## Release numbering
 
-The current release is **V7.0.6**, following V7.0.5. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
+The current release is **V7.0.7**, following V7.0.6. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
 
 - Increase the final number for a minor patch; it may advance through 20.
 - After minor patch 20, advance the middle number and reset the final number to 0.
