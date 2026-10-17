@@ -18,7 +18,7 @@ The browser-enforced Content Security Policy only allows the site's own scripts,
 
 ## Release numbering
 
-The current release is **V7.0.3**, following V7.0.2. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
+The current release is **V7.0.4**, following V7.0.3. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
 
 - Increase the final number for a minor patch; it may advance through 20.
 - After minor patch 20, advance the middle number and reset the final number to 0.
@@ -29,9 +29,19 @@ When a release changes the site's HTML, CSS, or JavaScript, set the stylesheet a
 
 ## Noticeboard feed
 
-The noticeboard reads a public JSON array from `assets/notices.json` by default. It is empty until notices are added, and the page links visitors to Discord in the meantime. Each item can contain string fields `title` and `body`, plus optional `author` and ISO `createdAt`. Content is inserted as text, not HTML.
+The noticeboard reads `assets/notices.json` by default. It remains a static fallback until a bot API URL is configured in `DEFAULT_NOTICE_FEED` in `script.js`. Feed values are rendered as text, not HTML.
 
-For automatic Discord announcements, deploy `assets/discord-notices-worker.js` as a Cloudflare Worker. Set the Worker secret `DISCORD_BOT_TOKEN` and a `SITE_ORIGIN` variable to the exact public site origin (for example, `https://pcontinentalvr.github.io`). The channel and owner IDs supplied for this setup are non-secret defaults in the Worker; override them with `DISCORD_CHANNEL_ID` and `DISCORD_AUTHOR_ID` variables if needed. The Worker publishes only recent text posts by that owner or posts sent by a webhook in the configured channel. Give the bot only View Channel and Read Message History permissions for that channel; enable the Message Content intent if Discord requires it for your bot. Set `data-feed-url` on `#notice-feed` in `gatherings.html` and `#notice-preview-message` in `index.html` to the deployed Worker URL, and allow that Worker origin in the `connect-src` directive in all four pages. Never put a bot token or webhook URL in this repository or browser code. A Discord webhook is write-only and cannot retrieve channel history. Any bot token or webhook credential shared in chat should be treated as compromised: rotate the token and revoke/replace the webhook before deployment.
+### Discord bot
+
+`bot/` contains a small Node.js bot and read-only HTTPS-feed service. GitHub Pages cannot run a persistent bot, so deploy this service to an always-on host you control and put it behind HTTPS. The bot fetches recent messages from the configured channel, then keeps its in-memory notice cache current; it publishes only non-empty text messages from the configured author or a webhook in that channel.
+
+1. **Rotate the bot token shared in chat before use.** Store the replacement as the `DISCORD_BOT_TOKEN` environment secret on the host, or in `bot/.env` for local development. Never commit `.env`, paste the token into site JavaScript/HTML, or expose it through logs. The Discord public key and application ID are not needed for this read-only Gateway bot.
+2. Copy `bot/.env.example` to `bot/.env` and configure the new token, the channel and author IDs, the site's exact origin (`https://pcontinentalvr.github.io`), and the host's port. IDs are identifiers, not credentials.
+3. Enable the **Message Content Intent** in the Discord Developer Portal. The bot needs only View Channel and Read Message History for the configured channel.
+4. From `bot/`, run `npm install` and `npm start`. The service exposes `GET /api/notices`; the hosting provider must keep it running and provide HTTPS. The API permits browser requests only from the configured site origin. The notices themselves are public; CORS is not authentication.
+5. Once the HTTPS endpoint is deployed, set `DEFAULT_NOTICE_FEED` in `script.js` to its `/api/notices` URL and add that endpoint's origin to `connect-src` in the CSP on all four HTML pages. Until then, the website continues to use the local JSON fallback.
+
+Do not deploy a bot token to GitHub Pages or use the token previously shared in chat; reset it first. Keep any Discord webhook secret out of the bot and repository as well.
 
 Gatherings usually happen past midnight in GMT−3, but there is no fixed schedule. The displayed gold coins are a real community perk for active members, not cash, an investment, or a promise of financial value.
 
