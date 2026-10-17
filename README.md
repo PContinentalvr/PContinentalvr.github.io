@@ -18,7 +18,7 @@ The browser-enforced Content Security Policy only allows the site's own scripts,
 
 ## Release numbering
 
-The current release is **V7.0.5**, following V7.0.4. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
+The current release is **V7.0.6**, following V7.0.5. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
 
 - Increase the final number for a minor patch; it may advance through 20.
 - After minor patch 20, advance the middle number and reset the final number to 0.
