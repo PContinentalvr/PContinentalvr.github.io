@@ -16,7 +16,16 @@ The background audio file is `assets/backgroundost.mp3`. Browsers may block soun
 
 The browser-enforced Content Security Policy only allows the site's own scripts, styles, and audio, plus Google Fonts for type. Review that policy if you add an external embed, script, image, or media source.
 
-When updating the site's HTML, CSS, or JavaScript, bump the stylesheet and script `v` query in all four HTML pages together. This prevents browsers from combining a newly deployed page with cached older assets.
+## Release numbering
+
+The current release is **V7.0.3**, following V7.0.2. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
+
+- Increase the final number for a minor patch; it may advance through 20.
+- After minor patch 20, advance the middle number and reset the final number to 0.
+- The middle number may advance through 9. After major line 9, advance the stable-build number, reset the other numbers to 0, and mark the new build as **Preview** until it is accepted as stable.
+- Advance the first number for each new stable build.
+
+When a release changes the site's HTML, CSS, or JavaScript, set the stylesheet and script `v` query to that release version in all four HTML pages together. This prevents browsers from combining a newly deployed page with cached older assets.
 
 ## Noticeboard feed
 

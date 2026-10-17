@@ -457,6 +457,7 @@ const watchPanel = document.querySelector("#watch-panel");
 const watchHour = document.querySelector(".watch-hour");
 const watchMinute = document.querySelector(".watch-minute");
 const watchSecond = document.querySelector(".watch-second");
+let watchClockInterval = null;
 const watchNumberMarks = watchPanel.querySelectorAll(".watch-tick");
 const watchRabbit = watchPanel.querySelector(".watch-rabbit");
 const watchSky = watchPanel.querySelector(".watch-sky");
@@ -507,6 +508,13 @@ function setWatchOpen(isOpen) {
   watchToggle.setAttribute("aria-expanded", String(isOpen));
   updateWatchLabel();
   watchPanel.hidden = !isOpen;
+  if (isOpen) {
+    updateClock();
+    if (watchClockInterval === null) watchClockInterval = window.setInterval(updateClock, 1000);
+  } else if (watchClockInterval !== null) {
+    window.clearInterval(watchClockInterval);
+    watchClockInterval = null;
+  }
 }
 
 function updateWatchLabel() {
@@ -543,9 +551,6 @@ window.addEventListener("scroll", () => {
     setWatchOpen(false);
   }
 }, { passive: true });
-
-updateClock();
-window.setInterval(updateClock, 1000);
 
 function updateMenuLabel() {
   const isExpanded = menuToggle.getAttribute("aria-expanded") === "true";
