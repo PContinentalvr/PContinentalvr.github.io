@@ -425,7 +425,7 @@ h1 em, h2 em { color: var(--gold-bright); font-weight: 500; }
   .profile-bio { font-size: 9px; }
   .site-footer { padding-inline: 5%; }
 }
-@media (min-width: 1001px) and (max-width: 1120px) {
+@media (min-width: 1001px) and (max-width: 1599px) {
   .site-header { padding-inline: 4%; }
   .site-nav { position: absolute; top: calc(100% - 1px); right: 0; left: 0; display: none; align-items: stretch; gap: 0; padding: 10px 4% 20px; border-bottom: 1px solid var(--line); background: #11110f; }
   .site-nav.is-open { display: grid; }
@@ -596,6 +596,56 @@ h1 em, h2 em { color: var(--gold-bright); font-weight: 500; }
 .coin-panel > p:not(.eyebrow) { color: #aaa69b; font-size: 10px; line-height: 1.8; }
 .people-content .about-heading { max-width: 900px; }
 .inner-cta { margin-top: 10px; }
+.house-code, .hierarchy-content { padding-top: 52px; padding-bottom: 80px; }
+.house-code-intro, .hierarchy-preface { display: grid; grid-template-columns: 56px minmax(0, 1fr); align-items: start; gap: 20px; max-width: 900px; margin: 0 auto 34px; }
+.code-seal, .hierarchy-sigil { display: grid; width: 48px; height: 48px; place-items: center; border: 1px solid var(--gold-muted); border-radius: 50%; color: var(--gold-bright); font-size: 21px; box-shadow: inset 0 0 0 4px #19160f, inset 0 0 0 5px #725c37; }
+.house-code-intro h2, .hierarchy-preface h2 { margin: 0 0 9px; font: 500 clamp(26px, 3.7vw, 39px)/1.13 var(--serif); }
+.house-code-intro p, .hierarchy-preface p { max-width: 740px; margin: 0; color: #aaa69b; font-size: 11px; line-height: 1.85; }
+.house-code-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.house-code-card { position: relative; min-width: 0; min-height: 190px; padding: 25px 24px 23px; border: 1px solid var(--line); background: radial-gradient(ellipse at 100% 0, #282218 0, transparent 55%), #15140f; }
+.house-code-card h3, .hierarchy-node h3, .hierarchy-token h3 { margin: 14px 0 9px; color: var(--paper); font: 500 clamp(20px, 2.5vw, 27px)/1.15 var(--serif); overflow-wrap: anywhere; }
+.house-code-card p, .hierarchy-node p, .hierarchy-token p { margin: 0; color: #aaa69b; font-size: 10px; line-height: 1.8; overflow-wrap: anywhere; }
+.code-number { color: var(--gold-bright); font: 9px var(--mono); letter-spacing: .12em; }
+.house-code-help { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin-top: 26px; padding: 24px 26px; border: 1px solid rgb(200 169 110 / 25%); background: #171611; }
+.house-code-help > div { max-width: 600px; }
+.house-code-help h2, .hierarchy-community h2 { margin: 0 0 8px; font: 500 clamp(24px, 3vw, 34px)/1.15 var(--serif); }
+.house-code-help p, .hierarchy-community > p:not(.eyebrow) { margin: 0; color: #aaa69b; font-size: 10px; line-height: 1.8; }
+.house-code-related { margin-top: 25px; }
+.hierarchy-preface { max-width: 940px; }
+.hierarchy-chain { position: relative; display: grid; max-width: 940px; gap: 15px; margin: 0 auto 40px; padding: 0; list-style: none; }
+.hierarchy-node { position: relative; display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: start; gap: 19px; min-width: 0; padding: 23px 25px; border: 1px solid var(--line); background: linear-gradient(105deg, #1b1a15, #12120f 88%); }
+.hierarchy-node:not(:last-child)::after { position: absolute; z-index: 1; bottom: -16px; left: 48px; width: 1px; height: 15px; background: #8b7043; content: ""; }
+.hierarchy-level { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid var(--gold-muted); border-radius: 50%; color: var(--gold-bright); font: 12px var(--mono); }
+.hierarchy-node h3 { margin-top: 1px; }
+.hierarchy-branch { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(250px, .75fr); gap: 28px; max-width: 940px; margin: 0 auto 30px; padding: 28px; border: 1px solid rgb(200 169 110 / 25%); background: #171611; }
+.hierarchy-branch-single { grid-template-columns: minmax(0, 1fr); }
+.hierarchy-branch-heading .eyebrow { line-height: 1.8; }
+.hierarchy-branch h2 { margin: 12px 0 10px; font: 500 clamp(24px, 3.1vw, 35px)/1.13 var(--serif); }
+.hierarchy-branch-heading > p:last-child { margin: 0; color: #aaa69b; font-size: 10px; line-height: 1.8; }
+.hierarchy-roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.hierarchy-roles li { display: grid; align-content: start; gap: 7px; min-width: 0; padding: 16px; border: 1px solid var(--line); background: #12110e; }
+.hierarchy-roles strong { color: var(--gold-bright); font: 500 10px var(--mono); letter-spacing: .04em; overflow-wrap: anywhere; }
+.hierarchy-roles span { color: #aaa69b; font-size: 10px; line-height: 1.7; overflow-wrap: anywhere; }
+.hierarchy-token { align-self: center; min-width: 0; padding: 21px; border: 1px solid var(--line); background: #12110e; }
+.hierarchy-token .coin-token { margin-bottom: 12px; }
+.hierarchy-token h3 { margin-top: 0; font-size: 22px; }
+.hierarchy-community { max-width: 940px; margin: 0 auto 24px; padding: 28px; border: 1px solid var(--line); background: #14130f; }
+.hierarchy-community .eyebrow { margin: 0 0 11px; }
+.hierarchy-rp { max-width: 940px; margin: 0 auto 24px; padding: 28px; border: 1px solid rgb(200 169 110 / 35%); background: radial-gradient(ellipse at 100% 0, #282218 0, transparent 55%), #14130f; }
+.hierarchy-rp > .eyebrow { margin: 0 0 11px; }
+.hierarchy-rp h2 { margin: 0 0 10px; font: 500 clamp(24px, 3vw, 34px)/1.15 var(--serif); }
+.hierarchy-rp-intro, .hierarchy-rp-note { max-width: 760px; margin: 0; color: #aaa69b; font-size: 10px; line-height: 1.8; }
+.hierarchy-rp-chain { display: grid; gap: 10px; margin: 20px 0 14px; padding: 0; list-style: none; }
+.hierarchy-rp-chain li { display: grid; grid-template-columns: 32px minmax(0, 1fr); align-items: start; gap: 13px; padding: 16px; border: 1px solid var(--line); background: #12110e; }
+.hierarchy-rp-index { display: grid; width: 28px; height: 28px; place-items: center; border: 1px solid var(--gold-muted); border-radius: 50%; color: var(--gold-bright); font: 10px var(--mono); }
+.hierarchy-rp-chain h3 { margin: 0 0 5px; color: var(--paper); font: 500 20px/1.2 var(--serif); overflow-wrap: anywhere; }
+.hierarchy-rp-chain p { margin: 0; color: #aaa69b; font-size: 10px; line-height: 1.7; overflow-wrap: anywhere; }
+.hierarchy-actions { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 19px; }
+.hierarchy-sources { display: grid; justify-items: start; gap: 10px; max-width: 940px; margin: 0 auto; padding-top: 17px; border-top: 1px solid var(--line); }
+.hierarchy-sources p { margin: 0; color: #a68d5c; font: 8px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.hierarchy-sources a { color: var(--gold-bright); font-size: 10px; text-decoration: underline; text-underline-offset: 3px; }
+.hierarchy-sources a:hover, .hierarchy-sources a:focus-visible { color: var(--paper); }
+.hierarchy-sources small { max-width: 620px; color: #89857b; font-size: 9px; line-height: 1.7; }
 @media (max-width: 1000px) and (min-width: 721px) {
   .inner-dispatch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dispatch-feature-card .card-body { padding: 28px; }
@@ -624,6 +674,25 @@ h1 em, h2 em { color: var(--gold-bright); font-weight: 500; }
   .feed-filters { max-width: calc(100vw - 46px); overflow-x: auto; }
   .noticeboard-heading { align-items: flex-start; flex-direction: column; }
   .schedule-panel { gap: 27px; }
+  .house-code, .hierarchy-content { padding-top: 34px; padding-bottom: 54px; }
+  .house-code-intro, .hierarchy-preface { grid-template-columns: 38px minmax(0, 1fr); gap: 13px; margin-bottom: 24px; }
+  .code-seal, .hierarchy-sigil { width: 36px; height: 36px; font-size: 17px; }
+  .house-code-grid { grid-template-columns: 1fr; gap: 10px; }
+  .house-code-card { min-height: 0; padding: 19px; }
+  .house-code-help { align-items: flex-start; flex-direction: column; gap: 17px; padding: 20px; }
+  .hierarchy-chain { gap: 11px; margin-bottom: 26px; }
+  .hierarchy-node { grid-template-columns: 36px minmax(0, 1fr); gap: 13px; padding: 17px; }
+  .hierarchy-node:not(:last-child)::after { left: 34px; bottom: -12px; height: 11px; }
+  .hierarchy-level { width: 32px; height: 32px; font-size: 10px; }
+  .hierarchy-branch { grid-template-columns: 1fr; gap: 18px; margin-bottom: 17px; padding: 20px; }
+  .hierarchy-token { padding: 18px; }
+  .hierarchy-community { padding: 20px; }
+  .hierarchy-rp { padding: 20px; }
+  .hierarchy-roles { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+  .hierarchy-roles li { padding: 13px; }
+  .hierarchy-rp-chain li { grid-template-columns: 28px minmax(0, 1fr); gap: 10px; padding: 13px; }
+  .hierarchy-rp-chain h3 { font-size: 18px; }
+  .hierarchy-actions { gap: 15px; }
 }
 @media (max-width: 380px) {
   .dispatch-feature-heading { align-items: flex-start; flex-direction: column; gap: 10px; }

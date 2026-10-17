@@ -1,6 +1,6 @@
 # The Continental — VR Social House
 
-A responsive, bilingual (English / Portuguese) VRChat community site with separate Lobby, Dispatch, Gatherings, and People pages, a local-time pocket watch, an optional soundtrack, and a live-ready noticeboard. The site is plain HTML, CSS, and JavaScript; there is no build step or package installation.
+A responsive, bilingual (English / Portuguese) VRChat community site with separate Lobby, Dispatch, Gatherings, People, House Code, and House Hierarchy pages, a local-time pocket watch, an optional soundtrack, and a live-ready noticeboard. The site is plain HTML, CSS, and JavaScript; there is no build step or package installation.
 
 ## Publish with GitHub Pages
 
@@ -10,22 +10,24 @@ In the repository settings, open **Pages**, choose the `main` branch and `/ (roo
 
 Update the `vrchat` and `discord` destinations in `COMMUNITY_LINKS` in `script.js` with the group's VRChat page and Discord invite URL.
 
-The landing page is `index.html`; the other pages are `dispatch.html`, `gatherings.html`, and `people.html`. UI translations live in the `translations` object in `script.js`; add matching strings in both `en` and `pt` when adding translatable text.
+The landing page is `index.html`; the other pages are `dispatch.html`, `gatherings.html`, `people.html`, `rules.html`, and `hierarchy.html`. UI translations live in the `translations` object in `script.js`; add matching strings in both `en` and `pt` when adding translatable text.
 
-The background audio file is `assets/backgroundost.mp3`; playback defaults to 10% volume unless the visitor has saved a different level. Browsers may block sound autoplay until someone interacts with the page; the music button in the header lets visitors start or pause the track, and the spinning comet opens its volume slider. Internal links between the four site pages are loaded in place so the audio keeps playing without restarting; a full browser reload may still interrupt playback.
+The background audio file is `assets/backgroundost.mp3`; playback defaults to 10% volume unless the visitor has saved a different level. Browsers may block sound autoplay until someone interacts with the page; the music button in the header lets visitors start or pause the track, and the spinning comet opens its volume slider. Internal links between the six site pages are loaded in place so the audio keeps playing without restarting; a full browser reload may still interrupt playback.
 
 The browser-enforced Content Security Policy only allows the site's own scripts, styles, and audio, plus Google Fonts for type. Review that policy if you add an external embed, script, image, or media source.
 
 ## Release numbering
 
-The current release is **V7.1.0**, following V7.0.9. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
+The current release is **V7.1.3**, following V7.1.2. This patch corrects the RP leadership and expands the bilingual film-world role guide and hotel staff roster. Versions use `V<stable-build>.<major-line>.<minor-patch>`:
 
 - Increase the final number for a minor patch; it may advance through 20.
 - After minor patch 20, advance the middle number and reset the final number to 0.
 - The middle number may advance through 9. After major line 9, advance the stable-build number, reset the other numbers to 0, and mark the new build as **Preview** until it is accepted as stable.
 - Advance the first number for each new stable build.
 
-When a release changes the site's HTML, CSS, or JavaScript, set the stylesheet and script `v` query to that release version in all four HTML pages together. This prevents browsers from combining a newly deployed page with cached older assets.
+When a release changes the site's HTML, CSS, or JavaScript, set the stylesheet and script `v` query to that release version in all six HTML pages together. This prevents browsers from combining a newly deployed page with cached older assets.
+
+The **Code of the House** explains the community's safety, privacy, consent, dress, and moderation expectations. **House Hierarchy** distinguishes offices and hotel posts shown in the films from extensions used for roleplay. The community RP chain is Nekozushka (Elder and full-time owner, final word), Succubi (Manager and moderator), then Prickett (Concierge and usual welcome for new guests and staff). Other hotel posts are available for roleplay and do not confer additional moderation or owner authority.
 
 Dispatch content is driven by `assets/dispatch.json`: one featured post moves through the carousel every eight seconds, and selecting a category reveals up to three posts at a time. Categories with more posts page forward every ten seconds, with manual previous/next controls. Rotation pauses while a post or carousel/page control is hovered or focused, when the tab is in the background, and by default for visitors who prefer reduced motion. The pause/resume button stops or restarts automatic movement.
 
